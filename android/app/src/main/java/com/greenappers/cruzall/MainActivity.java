@@ -1,4 +1,4 @@
-package com.greenappers.cruzall;
+package com.greenappers.cruzall.android;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
