@@ -45,11 +45,6 @@ class Account {
       _$AccountFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountToJson(this);
-
-  void clearMatures() {
-    maturesBalance = 0;
-    maturesHeight = 0;
-  }
 }
 
 class Seed {
@@ -288,13 +283,7 @@ class Wallet extends Model {
     }
   }
 
-  void clearMatures() {
-    maturesBalance = maturesHeight = 0;
-    for (Account account in accounts.values) account.clearMatures();
-  }
-
   void reload() async {
-    // XXX let's see. clearMatures();
     pendingCount = 0;
     transactions.clear();
     readPendingTransactions();

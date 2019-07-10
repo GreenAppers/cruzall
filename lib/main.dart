@@ -14,6 +14,7 @@ import 'package:cruzawl/currency.dart';
 import 'package:cruzall/cruzall.dart';
 import 'package:cruzall/cruzawl-ui/address.dart';
 import 'package:cruzall/cruzawl-ui/block.dart';
+import 'package:cruzall/cruzawl-ui/cruzbase.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/model/cruzall.dart';
@@ -94,6 +95,7 @@ class CruzallAppState extends State<CruzallApp> {
 
     final Wallet wallet = appState.wallet;
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'cruzall',
         theme: theme,
         home: ScopedModel(
@@ -128,6 +130,9 @@ class CruzallAppState extends State<CruzallApp> {
             return MaterialPageRoute(
                 settings: settings,
                 builder: (context) {
+                  if (addressText == 'cruzbase')
+                    return CruzbaseWidget(wallet.currency, wallet.currency.network.tip);
+
                   Address address = wallet.addresses[addressText];
                   return address != null
                       ? SimpleScaffold(
