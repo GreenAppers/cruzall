@@ -75,13 +75,17 @@ class CruzallWidget extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: <Widget>[
-            WalletReceiveWidget(),
-            WalletBalanceWidget(),
-            WalletSendWidget(wallet),
-          ],
-        ),
+        body: appState.walletsLoading > 0
+            ? (appState.fatal != null
+                ? ErrorWidget.builder(appState.fatal)
+                : Center(child: CircularProgressIndicator()))
+            : TabBarView(
+                children: <Widget>[
+                  WalletReceiveWidget(),
+                  WalletBalanceWidget(),
+                  WalletSendWidget(wallet),
+                ],
+              ),
       ),
     );
   }

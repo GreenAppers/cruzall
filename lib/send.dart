@@ -147,7 +147,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                   TextFormField(
                     key: amountKey,
                     textAlign: TextAlign.right,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
                       hintText: '0.0',
                       suffixText: ' ' + currency.ticker,
@@ -178,7 +178,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                   ),
                   TextFormField(
                     textAlign: TextAlign.right,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
                       hintText: '0.0',
                       suffixText: ' ' + currency.ticker,

@@ -15,9 +15,11 @@ import 'package:cruzall/model/wallet.dart';
 
 class Cruzall extends Model {
   CruzallPreferences preferences;
+  FlutterErrorDetails fatal;
   Directory dataDir;
   Wallet wallet;
   List<Wallet> wallets = <Wallet>[];
+  int walletsLoading = 0;
   static String walletSuffix = '.cruzall';
   Cruzall(this.preferences, this.dataDir);
 
@@ -40,14 +42,21 @@ class Cruzall extends Model {
     Map<String, String> loadedWallets = preferences.wallets;
     loadedWallets.forEach((k, v) => addWallet(
         Wallet.fromFile(
-            getWalletFilename(k), Seed(base64.decode(v)), notifyListeners),
+            getWalletFilename(k), Seed(base64.decode(v)), openedWallet),
         store: false));
+  }
+
+  void openedWallet(Wallet x) {
+    if (x.fatal != null) fatal = x.fatal;
+    else walletsLoading--;
+    notifyListeners();
   }
 
   String getWalletFilename(String walletName) =>
       dataDir.path + Platform.pathSeparator + walletName + walletSuffix;
 
   Wallet addWallet(Wallet x, {bool store = true}) {
+    walletsLoading++;
     x.balanceChanged = notifyListeners;
     wallet = x;
     wallets.add(wallet);

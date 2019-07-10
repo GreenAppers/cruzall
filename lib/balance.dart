@@ -53,7 +53,7 @@ class WalletBalanceWidget extends StatelessWidget {
       ),
     ];
 
-    if (true || wallet.maturesBalance > 0) {
+    if (wallet.maturesBalance > 0) {
       ret.add(Text(
           'Your balance maturing by height ${wallet.maturesHeight} is:',
           style: labelStyle));

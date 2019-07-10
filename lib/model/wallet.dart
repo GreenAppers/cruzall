@@ -65,6 +65,8 @@ class Seed {
   String toJson() => base64.encode(data);
 }
 
+typedef WalletCallback = void Function(Wallet);
+
 class Wallet extends Model {
   String name, seedPhrase;
   Seed seed;
@@ -81,21 +83,25 @@ class Wallet extends Model {
   Map<String, Transaction> transactionIds = Map<String, Transaction>();
   var walletStore, accountStore, addressStore, pendingStore;
   VoidCallback balanceChanged;
+  FlutterErrorDetails fatal;
 
-  Wallet.generate(String filename, String name, Currency currency)
-      : this.fromSeedPhrase(filename, name, currency, generateMnemonic());
+  Wallet.generate(String filename, String name, Currency currency,
+      [WalletCallback loaded])
+      : this.fromSeedPhrase(
+            filename, name, currency, generateMnemonic(), loaded);
 
   Wallet.fromSeedPhrase(
-      String filename, String name, Currency currency, String seedPhrase)
+      String filename, String name, Currency currency, String seedPhrase,
+      [WalletCallback loaded])
       : this.fromSeed(filename, name, currency,
-            Seed(mnemonicToSeed(seedPhrase)), seedPhrase);
+            Seed(mnemonicToSeed(seedPhrase)), seedPhrase, loaded);
 
   Wallet.fromSeed(String filename, this.name, this.currency, this.seed,
-      [this.seedPhrase]) {
-    if (filename != null) openWalletStorage(filename, true);
+      [this.seedPhrase, WalletCallback loaded]) {
+    if (filename != null) openWalletStorage(filename, true, loaded);
   }
 
-  Wallet.fromFile(String filename, this.seed, [VoidCallback loaded])
+  Wallet.fromFile(String filename, this.seed, [WalletCallback loaded])
       : name = 'loading',
         currency = const LoadingCurrency() {
     openWalletStorage(filename, false, loaded);
@@ -151,32 +157,41 @@ class Wallet extends Model {
   }
 
   void openWalletStorage(String filename, bool create,
-      [VoidCallback opened]) async {
-    debugPrint((create ? 'Creating' : 'Opening') + ' wallet $filename ...');
-    if (create) assert(await File(filename).exists() == false);
-    storage = await databaseFactoryIo.openDatabase(
-      filename,
-      codec: getSalsa20SembastCodec(Uint8List.view(seed.data.buffer, 32)),
-    );
-    walletStore = StoreRef<String, dynamic>.main();
-    accountStore = intMapStoreFactory.store('accounts');
-    addressStore = stringMapStoreFactory.store('addresses');
-    pendingStore = stringMapStoreFactory.store('pendingTransactions');
+      [WalletCallback opened]) async {
+    try {
+      debugPrint((create ? 'Creating' : 'Opening') + ' wallet $filename ...');
+      if (create) assert(await File(filename).exists() == false);
+      storage = await databaseFactoryIo.openDatabase(
+        filename,
+        codec: getSalsa20SembastCodec(Uint8List.view(seed.data.buffer, 32)),
+      );
+      walletStore = StoreRef<String, dynamic>.main();
+      accountStore = intMapStoreFactory.store('accounts');
+      addressStore = stringMapStoreFactory.store('addresses');
+      pendingStore = stringMapStoreFactory.store('pendingTransactions');
 
-    if (create) {
-      await storeHeader();
-      await storeAccount(account);
-    } else {
-      await readStoredHeader();
-      await readStoredAccounts();
-      await readStoredAddresses(load: false);
+      if (create) {
+        await storeHeader();
+        await storeAccount(account);
+      } else {
+        await readStoredHeader();
+        await readStoredAccounts();
+        await readStoredAddresses(load: false);
+      }
+
+    } catch (error, stackTrace) {
+      fatal = FlutterErrorDetails(exception: error, stack: stackTrace);
+      if (opened != null) return opened(this);
+      else rethrow;
     }
 
     for (Account account in accounts.values)
-      while (account.reserveAddress.length < 20)
+      while (account.reserveAddress.length < 20) {
         addNextAddress(account: account, load: false);
+        await Future.delayed(Duration(seconds: 0));
+      }
 
-    if (opened != null) opened();
+    if (opened != null) opened(this);
     notifyListeners();
     reload();
   }
@@ -279,7 +294,7 @@ class Wallet extends Model {
   }
 
   void reload() async {
-    clearMatures();
+    // XXX let's see. clearMatures();
     pendingCount = 0;
     transactions.clear();
     readPendingTransactions();

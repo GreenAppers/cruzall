@@ -247,7 +247,8 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                 widget.appState.getWalletFilename(name),
                 name,
                 Currency.fromJson(currency),
-                entropyToMnemonic(mnemonicToEntropy(seedPhrase))));
+                entropyToMnemonic(mnemonicToEntropy(seedPhrase)),
+                widget.appState.openedWallet));
             widget.appState.setState(() {});
             if (!widget.welcome) Navigator.of(context).pop();
           },
