@@ -19,7 +19,9 @@ dependencies:
   qr_flutter: ^2.0.0
   sembast: ^1.16.0+3
   scoped_model: ^1.0.1
-  tweetnacl: ^0.3.1
+  tweetnacl:
+    git:
+      url: https://github.com/jspschool/tweetnacl-dart
 
 dev_dependencies:
   build_runner: ^1.4.0
