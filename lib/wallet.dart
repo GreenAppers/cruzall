@@ -238,18 +238,22 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
         RaisedGradientButton(
           labelText: 'Create',
           padding: EdgeInsets.all(32),
-          onPressed: () {
+          onPressed: () async {
             if (!formKey.currentState.validate()) return;
             formKey.currentState.save();
             Scaffold.of(context)
                 .showSnackBar(SnackBar(content: Text('Creating...')));
+            widget.appState.setState(() => widget.appState.walletsLoading++);
+            await Future.delayed(Duration(seconds: 1));
+
             widget.appState.addWallet(Wallet.fromSeedPhrase(
                 widget.appState.getWalletFilename(name),
                 name,
                 Currency.fromJson(currency),
                 entropyToMnemonic(mnemonicToEntropy(seedPhrase)),
                 widget.appState.openedWallet));
-            widget.appState.setState(() {});
+
+            widget.appState.setState(() => widget.appState.walletsLoading--);
             if (!widget.welcome) Navigator.of(context).pop();
           },
         ),

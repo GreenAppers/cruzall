@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:sembast/sembast.dart' hide Transaction;
+import 'package:sembast/sembast.dart' as sembast;
 import 'package:sembast/sembast_io.dart';
 
 import 'package:cruzawl/currency.dart';
@@ -66,7 +66,7 @@ class Wallet extends Model {
   String name, seedPhrase;
   Seed seed;
   Currency currency;
-  Database storage;
+  sembast.Database storage;
   num balance = 0, maturesBalance = 0;
   int activeAccountId = 0, pendingCount = 0, maturesHeight = 0;
   Map<int, Account> accounts = <int, Account>{0: Account(0)};
@@ -125,21 +125,23 @@ class Wallet extends Model {
         ..accountId = accountId
         ..chainIndex = index;
 
-  Address addNextAddress({bool load = true, Account account}) {
+  Address addNextAddress(
+      {bool load = true, Account account, sembast.Transaction txn}) {
     if (account == null) account = this.account;
     return addAddress(deriveAddress(account.nextIndex, accountId: account.id),
-        load: load);
+        load: load, txn: txn);
   }
 
-  Address addAddress(Address x, {bool store = true, bool load = true}) {
+  Address addAddress(Address x,
+      {bool store = true, bool load = true, sembast.Transaction txn}) {
     addresses[x.publicKey.toJson()] = x;
-    if (store) storeAddress(x);
+    if (store) storeAddress(x, txn);
     if (load) filterNetworkFor(x);
     if (x.state == AddressState.reserve)
       account.reserveAddress[x.chainIndex] = x;
     if (x.chainIndex != null && x.chainIndex >= account.nextIndex) {
       account.nextIndex = x.chainIndex + 1;
-      storeAccount(account);
+      storeAccount(account, txn);
     }
     return x;
   }
@@ -160,10 +162,10 @@ class Wallet extends Model {
         filename,
         codec: getSalsa20SembastCodec(Uint8List.view(seed.data.buffer, 32)),
       );
-      walletStore = StoreRef<String, dynamic>.main();
-      accountStore = intMapStoreFactory.store('accounts');
-      addressStore = stringMapStoreFactory.store('addresses');
-      pendingStore = stringMapStoreFactory.store('pendingTransactions');
+      walletStore = sembast.StoreRef<String, dynamic>.main();
+      accountStore = sembast.intMapStoreFactory.store('accounts');
+      addressStore = sembast.stringMapStoreFactory.store('addresses');
+      pendingStore = sembast.stringMapStoreFactory.store('pendingTransactions');
 
       if (create) {
         await storeHeader();
@@ -173,18 +175,21 @@ class Wallet extends Model {
         await readStoredAccounts();
         await readStoredAddresses(load: false);
       }
-
     } catch (error, stackTrace) {
       fatal = FlutterErrorDetails(exception: error, stack: stackTrace);
-      if (opened != null) return opened(this);
-      else rethrow;
+      if (opened != null)
+        return opened(this);
+      else
+        rethrow;
     }
 
-    for (Account account in accounts.values)
-      while (account.reserveAddress.length < 20) {
-        addNextAddress(account: account, load: false);
-        await Future.delayed(Duration(seconds: 0));
-      }
+    await storage.transaction((txn) async {
+      for (Account account in accounts.values)
+        while (account.reserveAddress.length < 20) {
+          addNextAddress(account: account, load: false, txn: txn);
+          await Future.delayed(Duration(seconds: 0));
+        }
+    });
 
     if (opened != null) opened(this);
     notifyListeners();
@@ -210,25 +215,25 @@ class Wallet extends Model {
     currency = Currency.fromJson(header['currency']);
   }
 
-  Future<void> storeAccount(Account x) async {
-    await accountStore.record(x.id).put(storage, x.toJson());
+  Future<void> storeAccount(Account x, [sembast.Transaction txn]) async {
+    await accountStore.record(x.id).put(txn ?? storage, x.toJson());
   }
 
   Future<void> readStoredAccounts() async {
-    var finder = Finder(sortOrders: [SortOrder('id')]);
+    var finder = sembast.Finder(sortOrders: [sembast.SortOrder('id')]);
     var records = await accountStore.find(storage, finder: finder);
     for (var record in records)
       addAccount(Account.fromJson(record.value), store: false);
   }
 
-  Future<void> storeAddress(Address x) async {
+  Future<void> storeAddress(Address x, [sembast.Transaction txn]) async {
     await addressStore
         .record(x.publicKey.toJson())
-        .put(storage, jsonDecode(jsonEncode(x)));
+        .put(txn ?? storage, jsonDecode(jsonEncode(x)));
   }
 
   Future<void> readStoredAddresses({bool load = true}) async {
-    var finder = Finder(sortOrders: [SortOrder('id')]);
+    var finder = sembast.Finder(sortOrders: [sembast.SortOrder('id')]);
     var records = await addressStore.find(storage, finder: finder);
     for (var record in records) {
       Address x = addAddress(currency.fromAddressJson(record.value),
@@ -247,7 +252,7 @@ class Wallet extends Model {
   }
 
   Future<void> readPendingTransactions() async {
-    var finder = Finder(sortOrders: [SortOrder('id')]);
+    var finder = sembast.Finder(sortOrders: [sembast.SortOrder('id')]);
     var records = await pendingStore.find(storage, finder: finder);
     for (var record in records) {
       updateTransaction(currency.fromTransactionJson(record.value),
@@ -257,9 +262,9 @@ class Wallet extends Model {
   }
 
   void expirePendingTransactions(int height) async {
-    var finder = Finder(
-      filter: Filter.lessThan('expires', height),
-      sortOrders: [SortOrder('expires')],
+    var finder = sembast.Finder(
+      filter: sembast.Filter.lessThan('expires', height),
+      sortOrders: [sembast.SortOrder('expires')],
     );
     var records = await pendingStore.find(storage, finder: finder);
     for (var record in records) {
