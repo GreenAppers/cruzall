@@ -47,15 +47,6 @@ class _CruzallSettingsState extends State<CruzallSettings> {
           ),
         ),
         ListTile(
-          leading: Icon(warningEnabled ? Icons.lock_outline : Icons.lock_open),
-          title: Text('Insecure device warning'),
-          trailing: Switch(
-            value: warningEnabled,
-            onChanged: (bool value) =>
-              setState(() => appState.preferences.insecureDeviceWarning = value),
-          ),
-        ),
-        ListTile(
           leading: Icon(Icons.color_lens),
           title: Text('Theme'),
           trailing: DropdownButton<String>(
@@ -65,6 +56,15 @@ class _CruzallSettingsState extends State<CruzallSettings> {
               appState.setState(() {});
             },
             items: buildDropdownMenuItem(themes.keys.toList()),
+          ),
+        ),
+        ListTile(
+          leading: Icon(warningEnabled ? Icons.lock_outline : Icons.lock_open),
+          title: Text('Insecure device warning'),
+          trailing: Switch(
+            value: warningEnabled,
+            onChanged: (bool value) =>
+              setState(() => appState.preferences.insecureDeviceWarning = value),
           ),
         ),
         ListTile(

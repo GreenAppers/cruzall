@@ -62,7 +62,7 @@ class _CruzallNetworkSettingsState extends State<CruzallNetworkSettings> {
           key: ValueKey(peer),
           margin: EdgeInsets.all(5.0),
           child: ListTile(
-            leading: Icon(Icons.cast),
+            leading: Icon(peer.ignoreBadCert ? Icons.cast : Icons.vpn_lock),
             title: Text(peer.name),
             subtitle: Text(peer.url),
             trailing: Icon(Icons.menu),
@@ -172,6 +172,7 @@ class AddPeerWidget extends StatefulWidget {
 class _AddPeerWidgetState extends State<AddPeerWidget> {
   final formKey = GlobalKey<FormState>();
   String name, url;
+  bool certRequired = true;
 
   @override
   Widget build(BuildContext c) {
@@ -216,6 +217,14 @@ class _AddPeerWidgetState extends State<AddPeerWidget> {
             onSaved: (val) => url = val,
           ),
         ),
+        ListTile(
+          leading: Icon(certRequired ? Icons.lock_outline : Icons.lock_open),
+          title: Text('Require SSL certificate'),
+          trailing: Switch(
+            value: certRequired,
+            onChanged: (bool value) => setState(() => certRequired = value),
+          ),
+        ),
         RaisedGradientButton(
           labelText: 'Create',
           padding: EdgeInsets.all(32),
@@ -226,7 +235,8 @@ class _AddPeerWidgetState extends State<AddPeerWidget> {
             Scaffold.of(context)
                 .showSnackBar(SnackBar(content: Text('Creating...')));
 
-            peers.add(PeerPreference(name, url, currency.ticker));
+            String options = PeerPreference.formatOptions(ignoreBadCert: !certRequired);
+            peers.add(PeerPreference(name, url, currency.ticker, options));
             appState.preferences.peers = peers;
             if (peers.length == 1) appState.connectPeers(currency);
 

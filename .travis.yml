@@ -9,22 +9,17 @@ addons:
       - libstdc++6
       - fonts-droid
 
-cache:
-  directories:
-  - "$HOME/flutter/"
-
 before_install:
   - echo $TRAVIS_OS_NAME
   - echo ${HOME}
   - echo ${TRAVIS_BUILD_DIR}
-  - if [ ! -d "${HOME}/flutter/bin" ]; then rm -rf ${HOME}/flutter; git clone https://github.com/flutter/flutter.git -b stable --depth 1 ${HOME}/flutter; fi
-  - ${HOME}/flutter/bin/flutter doctor
+  - git clone https://github.com/flutter/flutter.git -b stable --depth 1 ${HOME}/flutter
+  - ${HOME}/flutter/bin/flutter doctor -v
   - ${HOME}/flutter/bin/flutter packages get
-  - ${HOME}/flutter/bin/flutter packages pub run build_runner build
-  - cd cruzawl
-  - ${HOME}/flutter/bin/flutter packages get
-  - ${HOME}/flutter/bin/flutter packages pub run build_runner build
-  - cd ..
+
+cache:
+  directories:
+  - "$HOME/flutter/.pub-cache"
 
 script:
   - ${HOME}/flutter/bin/flutter test

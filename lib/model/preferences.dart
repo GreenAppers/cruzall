@@ -57,7 +57,7 @@ class CruzallPreferences extends SembastPreferences {
     var peers = data['peers'];
     if (peers == null)
       return <PeerPreference>[
-        PeerPreference('Localhost', 'wallet.cruzbit.xyz', 'CRUZ')
+        PeerPreference('Localhost', 'wallet.cruzbit.xyz', 'CRUZ', '')
       ];
     return peers.map<PeerPreference>((v) => PeerPreference.fromJson(v)).toList()
       ..sort(PeerPreference.comparePriority);
