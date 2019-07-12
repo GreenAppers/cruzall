@@ -115,5 +115,7 @@ Uint8List _generateNonce(Uint8List input) {
   return n;
 }
 
-SembastCodec getSalsa20SembastCodec(Uint8List password) =>
-    SembastCodec(signature: 'salsa20', codec: Salsa20Codec(password));
+const _encryptCodecSignature = 'salsa20';
+
+SembastCodec getSalsa20SembastCodec(Uint8List password) => SembastCodec(
+    signature: _encryptCodecSignature, codec: Salsa20Codec(password));

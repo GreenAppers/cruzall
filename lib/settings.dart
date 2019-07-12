@@ -19,20 +19,40 @@ class _CruzallSettingsState extends State<CruzallSettings> {
   Widget build(BuildContext context) {
     final Cruzall appState =
         ScopedModel.of<Cruzall>(context, rebuildOnChange: true);
-    final bool enabled = appState.preferences.walletsEncrypted;
+    final bool encryptionEnabled = appState.preferences.walletsEncrypted;
+    final bool warningEnabled = appState.preferences.insecureDeviceWarning;
     return ListView(
+      padding: EdgeInsets.only(top: 20),
       children: <Widget>[
         ListTile(
-          leading: Icon(enabled ? Icons.lock_outline : Icons.lock_open),
+          leading: Container(
+              padding: EdgeInsets.all(10),
+              child: Image.asset('assets/icon.png')),
+          title: Text('Version'),
+          trailing: Text(appState.packageInfo == null
+              ? 'Unknown'
+              : appState.packageInfo.version),
+        ),
+        ListTile(
+          leading: Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
           title: Text('Encryption'),
           trailing: Switch(
-            value: enabled,
+            value: encryptionEnabled,
             onChanged: (bool value) async {
               var password = value
                   ? await Navigator.of(context).pushNamed('/enableEncryption')
                   : null;
               setState(() => appState.preferences.encryptWallets(password));
             },
+          ),
+        ),
+        ListTile(
+          leading: Icon(warningEnabled ? Icons.lock_outline : Icons.lock_open),
+          title: Text('Insecure device warning'),
+          trailing: Switch(
+            value: warningEnabled,
+            onChanged: (bool value) =>
+              setState(() => appState.preferences.insecureDeviceWarning = value),
           ),
         ),
         ListTile(

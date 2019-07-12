@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:package_info/package_info.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:cruzawl/currency.dart';
@@ -16,12 +17,14 @@ import 'package:cruzall/model/wallet.dart';
 class Cruzall extends Model {
   CruzallPreferences preferences;
   FlutterErrorDetails fatal;
+  PackageInfo packageInfo;
+  bool isTrustFall;
   Directory dataDir;
   Wallet wallet;
   List<Wallet> wallets = <Wallet>[];
   int walletsLoading = 0;
   static String walletSuffix = '.cruzall';
-  Cruzall(this.preferences, this.dataDir);
+  Cruzall(this.preferences, this.dataDir, {this.packageInfo, this.isTrustFall});
 
   void setState(VoidCallback stateChangeCb) {
     stateChangeCb();
@@ -47,8 +50,10 @@ class Cruzall extends Model {
   }
 
   void openedWallet(Wallet x) {
-    if (x.fatal != null) fatal = x.fatal;
-    else walletsLoading--;
+    if (x.fatal != null)
+      fatal = x.fatal;
+    else
+      walletsLoading--;
     notifyListeners();
   }
 

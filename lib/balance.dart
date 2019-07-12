@@ -86,8 +86,8 @@ class WalletBalanceWidget extends StatelessWidget {
                   wallet.currency,
                   tx,
                   WalletTransactionInfo(wallet, tx),
-                  onToTap: (tx) => Navigator.of(context)
-                      .pushNamed('/address/${tx.toText}'),
+                  onToTap: (tx) =>
+                      Navigator.of(context).pushNamed('/address/${tx.toText}'),
                   onFromTap: (tx) => Navigator.of(context)
                       .pushNamed('/address/${tx.fromText}'),
                   onTap: (tx) => Navigator.of(context)

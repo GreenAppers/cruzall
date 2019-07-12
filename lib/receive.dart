@@ -50,8 +50,8 @@ class _WalletReceiveWidgetState extends State<WalletReceiveWidget> {
             ),
             CopyableText(
               addressText,
-              onTap: () => Navigator.of(context)
-                  .pushNamed('/address/${addressText}'),
+              onTap: () =>
+                  Navigator.of(context).pushNamed('/address/${addressText}'),
             ),
             Container(
               padding: EdgeInsets.all(32),

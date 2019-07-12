@@ -23,6 +23,9 @@ class CruzallPreferences extends SembastPreferences {
   bool get networkEnabled => data['networkEnabled'] ?? true;
   set networkEnabled(bool value) => setPreference('networkEnabled', value);
 
+  bool get insecureDeviceWarning => data['insecureDeviceWarning'] ?? true;
+  set insecureDeviceWarning(bool value) => setPreference('insecureDeviceWarning', value);
+
   bool get walletNameInTitle => data['walletNameInTitle'] ?? false;
   set walletNameInTitle(bool value) =>
       setPreference('walletNameInTitle', value);
@@ -53,7 +56,9 @@ class CruzallPreferences extends SembastPreferences {
   List<PeerPreference> get peers {
     var peers = data['peers'];
     if (peers == null)
-      return <PeerPreference>[PeerPreference('Localhost', 'wallet.cruzbit.xyz', 'CRUZ')];
+      return <PeerPreference>[
+        PeerPreference('Localhost', 'wallet.cruzbit.xyz', 'CRUZ')
+      ];
     return peers.map<PeerPreference>((v) => PeerPreference.fromJson(v)).toList()
       ..sort(PeerPreference.comparePriority);
   }

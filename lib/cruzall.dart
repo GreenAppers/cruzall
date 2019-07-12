@@ -14,15 +14,41 @@ import 'package:cruzall/model/wallet.dart';
 import 'package:cruzall/receive.dart';
 import 'package:cruzall/send.dart';
 
-class CruzallWidget extends StatelessWidget {
+class CruzallWidget extends StatefulWidget {
   final Wallet wallet;
   final Cruzall appState;
   CruzallWidget(this.wallet, this.appState);
 
   @override
+  _CruzallWidgetState createState() => _CruzallWidgetState();
+}
+
+class _CruzallWidgetState extends State<CruzallWidget> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.appState.isTrustFall &&
+        widget.appState.preferences.insecureDeviceWarning)
+      Future.delayed(Duration(seconds: 0)).then((_) => showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+                title: Text('Insecure Device Warning'),
+                content: Text('Proceed with caution'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('Ignore'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              )));
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Currency currency = wallet.currency;
+    final Currency currency = widget.wallet.currency;
 
     return DefaultTabController(
       length: 3,
@@ -31,7 +57,7 @@ class CruzallWidget extends StatelessWidget {
         appBar: GradientAppBar(
           centerTitle: true,
           title: Text(
-            currency.ticker + ' +' + currency.format(wallet.balance),
+            currency.ticker + ' +' + currency.format(widget.wallet.balance),
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: 'MartelSans',
@@ -75,15 +101,15 @@ class CruzallWidget extends StatelessWidget {
             ],
           ),
         ),
-        body: appState.walletsLoading > 0
-            ? (appState.fatal != null
-                ? ErrorWidget.builder(appState.fatal)
+        body: widget.appState.walletsLoading > 0
+            ? (widget.appState.fatal != null
+                ? ErrorWidget.builder(widget.appState.fatal)
                 : Center(child: CircularProgressIndicator()))
             : TabBarView(
                 children: <Widget>[
                   WalletReceiveWidget(),
                   WalletBalanceWidget(),
-                  WalletSendWidget(wallet),
+                  WalletSendWidget(widget.wallet),
                 ],
               ),
       ),
@@ -94,15 +120,15 @@ class CruzallWidget extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     final PopupMenuBuilder walletsMenu = PopupMenuBuilder();
-    for (Wallet x in appState.wallets) {
-      bool activeWallet = x.name == wallet.name;
+    for (Wallet x in widget.appState.wallets) {
+      bool activeWallet = x.name == widget.wallet.name;
       walletsMenu.addItem(
         text: x.name,
         icon: Icon(
             activeWallet ? Icons.check_box : Icons.check_box_outline_blank),
         onSelected: activeWallet
             ? () => Navigator.of(context).pushNamed('/wallet')
-            : () => appState.changeActiveWallet(x),
+            : () => widget.appState.changeActiveWallet(x),
       );
     }
     walletsMenu.addItem(
@@ -111,7 +137,7 @@ class CruzallWidget extends StatelessWidget {
       onSelected: () => Navigator.of(context).pushNamed('/addWallet'),
     );
 
-    return !appState.preferences.walletNameInTitle
+    return !widget.appState.preferences.walletNameInTitle
         ? walletsMenu.build(
             child: Icon(
             Icons.menu,
@@ -133,7 +159,7 @@ class CruzallWidget extends StatelessWidget {
                   ),
                   Flexible(
                     child: Text(
-                      wallet.name,
+                      widget.wallet.name,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: theme.primaryTextTheme.title.color,

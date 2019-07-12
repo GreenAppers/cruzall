@@ -5,9 +5,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:trust_fall/trust_fall.dart';
 
 import 'package:cruzall/address.dart';
 import 'package:cruzawl/currency.dart';
@@ -26,11 +28,14 @@ import 'package:cruzall/settings.dart';
 import 'package:cruzall/wallet.dart';
 
 void main() async {
+  bool isTrustFall = await TrustFall.isTrustFall;
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
   Directory dataDir = await getApplicationDocumentsDirectory();
-  debugPrint('main dataDir=${dataDir.path}');
+  debugPrint('main trustFall=${isTrustFall}, dataDir=${dataDir.path}');
   CruzallPreferences preferences = CruzallPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzall appState = Cruzall(await preferences.load(), dataDir);
+  Cruzall appState = Cruzall(await preferences.load(), dataDir,
+      packageInfo: packageInfo, isTrustFall: isTrustFall);
   runApp(ScopedModel(
     model: appState,
     child: CruzallApp(appState),
@@ -49,8 +54,10 @@ class CruzallAppState extends State<CruzallApp> {
   @override
   void initState() {
     super.initState();
+
     if (!widget.appState.preferences.walletsEncrypted)
       widget.appState.openWallets();
+
     for (Currency currency in currencies)
       widget.appState.connectPeers(currency);
   }
@@ -131,7 +138,8 @@ class CruzallAppState extends State<CruzallApp> {
                 settings: settings,
                 builder: (context) {
                   if (addressText == 'cruzbase')
-                    return CruzbaseWidget(wallet.currency, wallet.currency.network.tip);
+                    return CruzbaseWidget(
+                        wallet.currency, wallet.currency.network.tip);
 
                   Address address = wallet.addresses[addressText];
                   return address != null
@@ -140,10 +148,10 @@ class CruzallAppState extends State<CruzallApp> {
                       : ScopedModel(
                           model: wallet,
                           child: ScopedModelDescendant<Wallet>(
-                            builder: (context, child, model) =>
-                                ExternalAddressWidget(
-                                    wallet.currency, addressText,
-                                    title: 'External Address')));
+                              builder: (context, child, model) =>
+                                  ExternalAddressWidget(
+                                      wallet.currency, addressText,
+                                      title: 'External Address')));
                 });
           } else if (name.startsWith(block))
             return MaterialPageRoute(
@@ -174,22 +182,20 @@ class CruzallAppState extends State<CruzallApp> {
             return MaterialPageRoute(
               settings: settings,
               builder: (context) => ScopedModel(
-                  model: wallet,
-                  child: ScopedModelDescendant<Wallet>(
+                model: wallet,
+                child: ScopedModelDescendant<Wallet>(
                     builder: (context, child, model) {
-                      Transaction transaction = wallet.transactionIds[transactionIdText];
-                      return transaction != null ?
-                          TransactionWidget(
-                              wallet.currency,
-                              WalletTransactionInfo(wallet, transaction),
-                              transaction: transaction) :
-                          TransactionWidget(
-                              wallet.currency, TransactionInfo(),
-                              transactionIdText: transactionIdText,
-                              onHeightTap: (tx) => Navigator.of(context)
-                                  .pushNamed('/height/' + tx.height.toString()));
-                  }
-                ),
+                  Transaction transaction =
+                      wallet.transactionIds[transactionIdText];
+                  return transaction != null
+                      ? TransactionWidget(wallet.currency,
+                          WalletTransactionInfo(wallet, transaction),
+                          transaction: transaction)
+                      : TransactionWidget(wallet.currency, TransactionInfo(),
+                          transactionIdText: transactionIdText,
+                          onHeightTap: (tx) => Navigator.of(context)
+                              .pushNamed('/height/' + tx.height.toString()));
+                }),
               ),
             );
           }
