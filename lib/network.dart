@@ -232,6 +232,7 @@ class _AddPeerWidgetState extends State<AddPeerWidget> {
             if (!formKey.currentState.validate()) return;
             formKey.currentState.save();
             formKey.currentState.reset();
+            FocusScope.of(context).requestFocus(FocusNode());
             Scaffold.of(context)
                 .showSnackBar(SnackBar(content: Text('Creating...')));
 

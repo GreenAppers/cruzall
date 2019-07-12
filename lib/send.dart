@@ -182,7 +182,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
-                      hintText: '0.0',
+                      hintText: currency.suggestedFee(null),
                       suffixText: ' ' + currency.ticker,
                     ),
                     validator: (value) {
@@ -215,6 +215,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
             if (!formKey.currentState.validate()) return;
             formKey.currentState.save();
             formKey.currentState.reset();
+            FocusScope.of(context).requestFocus(FocusNode());
             Scaffold.of(context)
                 .showSnackBar(SnackBar(content: Text('Sending...')));
             Address fromAddress = wallet.addresses[fromInput];

@@ -135,6 +135,7 @@ class _EnableEncryptionWidgetState extends State<EnableEncryptionWidget> {
             if (!formKey.currentState.validate()) return;
             formKey.currentState.save();
             formKey.currentState.reset();
+            FocusScope.of(context).requestFocus(FocusNode());
             Navigator.of(context).pop(password);
           },
         ),
