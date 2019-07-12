@@ -17,10 +17,6 @@ before_install:
   - ${HOME}/flutter/bin/flutter doctor -v
   - ${HOME}/flutter/bin/flutter packages get
 
-cache:
-  directories:
-  - "$HOME/flutter/.pub-cache"
-
 script:
   - ${HOME}/flutter/bin/flutter test
 
