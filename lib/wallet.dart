@@ -49,6 +49,10 @@ class WalletWidget extends StatelessWidget {
         title: Text('Active transactions', style: labelTextStyle),
         trailing: Text(wallet.pendingCount.toString()),
       ),
+      ListTile(
+        title: Text('Maturing transactions', style: labelTextStyle),
+        trailing: Text(wallet.maturing.length.toString()),
+      ),
       HideableWidget(
         title: 'Seed phrase',
         child: CopyableText(wallet.seedPhrase),

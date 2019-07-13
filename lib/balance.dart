@@ -20,8 +20,12 @@ class WalletBalanceWidget extends StatelessWidget {
     final int numTransactions = wallet.transactions.data.length;
     final bool hasPeer =
         currency.network != null ? currency.network.hasPeer : false;
+    final ThemeData theme = Theme.of(context);
     final TextStyle labelStyle =
         TextStyle(fontFamily: 'MartelSans', color: Colors.grey);
+    final TextStyle linkStyle = TextStyle(
+      color: theme.accentColor,
+    );
 
     final List<Widget> ret = <Widget>[
       Container(
@@ -34,6 +38,7 @@ class WalletBalanceWidget extends StatelessWidget {
                   text: 'Your balance at block height ',
                   children: <TextSpan>[
                     TextSpan(
+                      style: linkStyle,
                       text: '${currency.network.tipHeight}',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () => Navigator.of(context)
@@ -91,7 +96,7 @@ class WalletBalanceWidget extends StatelessWidget {
                   onFromTap: (tx) => Navigator.of(context)
                       .pushNamed('/address/${tx.fromText}'),
                   onTap: (tx) => Navigator.of(context)
-                      .pushNamed('/transaction', arguments: tx),
+                      .pushNamed('/transaction/' + tx.id().toJson()),
                 );
               }),
         ),

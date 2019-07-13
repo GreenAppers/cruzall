@@ -294,30 +294,34 @@ class Wallet extends Model {
     readPendingTransactions();
 
     List<Address> reloadAddresses = addresses.values.toList();
-    for (Address address in reloadAddresses) filterNetworkFor(address);
+    List<Future<void>> reloading = List<Future<void>>(reloadAddresses.length);
+    for (int i=0; i<reloadAddresses.length; i++)
+      reloading[i] = filterNetworkFor(reloadAddresses[i]);
+    for (int i=0; i<reloadAddresses.length; i++)
+      await reloading[i];
 
     if (currency.network.hasPeer)
       (await currency.network.getPeer()).filterTransactionQueue();
   }
 
-  void filterNetworkFor(Address x) async {
-    if (!currency.network.hasPeer) return;
+  Future<void> filterNetworkFor(Address x) async {
+    if (!currency.network.hasPeer) return voidResult();
     Peer peer = await currency.network.getPeer();
-    if (peer == null) return;
+    if (peer == null) return voidResult();
 
     x.newBalance = x.newMaturesBalance = 0;
     bool filtering = await peer.filterAdd(x.publicKey, updateTransaction);
-    if (filtering == null) return;
+    if (filtering == null) return voidResult();
     assert(filtering == true);
 
     num newBalance = await peer.getBalance(x.publicKey);
-    if (newBalance == null) return;
+    if (newBalance == null) return voidResult();
 
     x.loadedHeight = x.loadedIndex = null;
     x.newBalance += newBalance;
     do {
       // Load most recent 100 blocks worth of transactions
-      if (await getNextTransactions(peer, x) == null) return;
+      if (await getNextTransactions(peer, x) == null) return voidResult();
     } while (x.loadedHeight > max(0, peer.tip.height - 100));
 
     /// [Address] [newBalance] and [newMatureBalance] account for possibly
@@ -392,6 +396,10 @@ class Wallet extends Model {
     if (to != null && !mature && transactionsChanged)
       applyMaturesBalanceDelta(
           to, undo ? -transaction.amount : transaction.amount, transaction);
+
+    /*debugPrint('${transaction.fromText} -> ${transaction.toText} ' +
+               currency.format(transaction.amount) +
+               ' mature=$mature, changed=$balanceChanged');*/
   }
 
   void updateBalance(Address x, num delta) {

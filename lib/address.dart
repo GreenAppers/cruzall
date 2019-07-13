@@ -163,7 +163,7 @@ class _AddressWidgetState extends State<AddressWidget> {
         tx,
         WalletTransactionInfo(widget.wallet, tx),
         onTap: (tx) =>
-            Navigator.of(context).pushNamed('/transaction', arguments: tx),
+            Navigator.of(context).pushNamed('/transaction/' + tx.id().toJson())
       );
     }
 
