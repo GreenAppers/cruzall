@@ -8,4 +8,4 @@ The mobile cruzbit wallet.
 
 SLIP 10 + BIP 44 HD wallet with BIP 39 mnemonics.
 
-See [website](https://www.greenappers.com/cruzall)
+[See website](https://www.greenappers.com/cruzall)
