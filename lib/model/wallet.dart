@@ -160,7 +160,7 @@ class Wallet extends Model {
       if (create) assert(await File(filename).exists() == false);
       storage = await databaseFactoryIo.openDatabase(
         filename,
-        codec: getSalsa20SembastCodec(Uint8List.view(seed.data.buffer, 32)),
+        codec: getSalsa20SembastCodec(Uint8List.fromList(seed.data.sublist(32)))
       );
       walletStore = sembast.StoreRef<String, dynamic>.main();
       accountStore = sembast.intMapStoreFactory.store('accounts');

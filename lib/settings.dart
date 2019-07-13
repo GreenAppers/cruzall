@@ -34,6 +34,18 @@ class _CruzallSettingsState extends State<CruzallSettings> {
               : appState.packageInfo.version),
         ),
         ListTile(
+          leading: Icon(Icons.color_lens),
+          title: Text('Theme'),
+          trailing: DropdownButton<String>(
+            value: appState.preferences.theme,
+            onChanged: (String val) {
+              appState.preferences.theme = val;
+              appState.setState(() {});
+            },
+            items: buildDropdownMenuItem(themes.keys.toList()),
+          ),
+        ),
+        ListTile(
           leading: Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
           title: Text('Encryption'),
           trailing: Switch(
@@ -44,18 +56,6 @@ class _CruzallSettingsState extends State<CruzallSettings> {
                   : null;
               setState(() => appState.preferences.encryptWallets(password));
             },
-          ),
-        ),
-        ListTile(
-          leading: Icon(Icons.color_lens),
-          title: Text('Theme'),
-          trailing: DropdownButton<String>(
-            value: appState.preferences.theme,
-            onChanged: (String val) {
-              appState.preferences.theme = val;
-              appState.setState(() {});
-            },
-            items: buildDropdownMenuItem(themes.keys.toList()),
           ),
         ),
         ListTile(
