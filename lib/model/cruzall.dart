@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import 'package:cruzall/cruzawl-ui/preferences.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
-import 'package:cruzall/model/preferences.dart';
 import 'package:cruzall/model/wallet.dart';
 
 class Cruzall extends Model {

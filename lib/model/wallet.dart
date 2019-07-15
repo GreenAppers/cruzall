@@ -19,8 +19,8 @@ import 'package:tweetnacl/tweetnacl.dart' as tweetnacl;
 
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
+import 'package:cruzawl/sembast.dart';
 import 'package:cruzawl/util.dart';
-import 'package:cruzall/model/sembast.dart';
 
 part 'wallet.g.dart';
 
