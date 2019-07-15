@@ -372,6 +372,10 @@ class Wallet extends Model {
 
   Future<TransactionIteratorResults> getNextTransactions(
       Peer peer, Address x) async {
+    if (x.loadedHeight != null) {
+      if (x.loadedIndex == 0) x.loadedHeight--;
+      else x.loadedIndex--;
+    }
     TransactionIteratorResults results = await peer.getTransactions(
       x.publicKey,
       startHeight: x.loadedHeight,
