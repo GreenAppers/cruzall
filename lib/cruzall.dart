@@ -33,7 +33,9 @@ class _CruzallWidgetState extends State<CruzallWidget> {
           context: context,
           builder: (_) => AlertDialog(
                 title: Text('Insecure Device Warning'),
-                content: Text('Proceed with caution'),
+                content: Text(
+                    'A rooted or jailbroken device has been detected.\n\nFurther use not recommended.',
+                    style: TextStyle(color: Colors.red)),
                 actions: <Widget>[
                   FlatButton(
                     child: const Text('Ignore'),
@@ -101,17 +103,17 @@ class _CruzallWidgetState extends State<CruzallWidget> {
             ],
           ),
         ),
-        body: widget.appState.walletsLoading > 0
-            ? (widget.appState.fatal != null
-                ? ErrorWidget.builder(widget.appState.fatal)
-                : Center(child: CircularProgressIndicator()))
-            : TabBarView(
-                children: <Widget>[
-                  WalletReceiveWidget(),
-                  WalletBalanceWidget(),
-                  WalletSendWidget(widget.wallet),
-                ],
-              ),
+        body: widget.appState.fatal != null
+            ? ErrorWidget.builder(widget.appState.fatal)
+            : (widget.appState.walletsLoading > 0
+                ? Center(child: CircularProgressIndicator())
+                : TabBarView(
+                    children: <Widget>[
+                      WalletReceiveWidget(),
+                      WalletBalanceWidget(),
+                      WalletSendWidget(widget.wallet),
+                    ],
+                  )),
       ),
     );
   }

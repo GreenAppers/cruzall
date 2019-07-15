@@ -46,7 +46,8 @@ class _CruzallSettingsState extends State<CruzallSettings> {
           ),
         ),
         ListTile(
-          leading: Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
+          leading:
+              Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
           title: Text('Encryption'),
           trailing: Switch(
             value: encryptionEnabled,
@@ -63,8 +64,8 @@ class _CruzallSettingsState extends State<CruzallSettings> {
           title: Text('Insecure device warning'),
           trailing: Switch(
             value: warningEnabled,
-            onChanged: (bool value) =>
-              setState(() => appState.preferences.insecureDeviceWarning = value),
+            onChanged: (bool value) => setState(
+                () => appState.preferences.insecureDeviceWarning = value),
           ),
         ),
         ListTile(

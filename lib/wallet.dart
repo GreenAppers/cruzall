@@ -7,8 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:bip39/bip39.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:cruzall/address.dart';
 import 'package:cruzawl/currency.dart';
+import 'package:cruzawl/util.dart';
+
+import 'package:cruzall/address.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/model/cruzall.dart';
@@ -174,9 +176,12 @@ class AddWalletWidget extends StatefulWidget {
 
 class _AddWalletWidgetState extends State<AddWalletWidget> {
   final formKey = GlobalKey<FormState>();
+  final TextEditingController keyListController = TextEditingController();
   final TextEditingController seedPhraseController =
       TextEditingController(text: generateMnemonic());
   String name = 'My wallet', seedPhrase = '', currency = 'CRUZ';
+  List<PrivateKey> keyList;
+  bool hdWallet = true;
 
   @override
   void dispose() {
@@ -220,25 +225,65 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
             onSaved: (val) => name = val,
           ),
         ),
-        ListTile(
-          subtitle: TextFormField(
-            maxLines: 2,
-            controller: seedPhraseController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Seed phrase',
-              suffixIcon: IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: () => seedPhraseController.text = generateMnemonic(),
-              ),
-            ),
-            validator: (value) {
-              if (!validateMnemonic(value)) return 'Invalid mnemonic.';
-              return null;
-            },
-            onSaved: (val) => seedPhrase = val,
-          ),
+        SwitchListTile(
+          title: Text('HD Wallet'),
+          value: hdWallet,
+          onChanged: (bool value) => setState(() => hdWallet = value),
         ),
+        hdWallet
+            ? ListTile(
+                subtitle: TextFormField(
+                  maxLines: 3,
+                  controller: seedPhraseController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Seed phrase',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.refresh),
+                      onPressed: () =>
+                          seedPhraseController.text = generateMnemonic(),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (!validateMnemonic(value)) return 'Invalid mnemonic.';
+                    return null;
+                  },
+                  onSaved: (val) => seedPhrase = val,
+                ),
+              )
+            : ListTile(
+                subtitle: TextFormField(
+                    maxLines: 10,
+                    controller: keyListController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Private Key List',
+                    ),
+                    validator: (value) {
+                      Currency cur = Currency.fromJson(currency);
+                      if (cur == null) return 'Invalid currency';
+                      try {
+                        List<PrivateKey> keys = value
+                            .split('\\s+')
+                            .map((key) => cur.fromPrivateKeyJson(key))
+                            .toList();
+                        if (keys.length <= 0) return 'No private keys';
+                        for (PrivateKey key in keys)
+                          if (!cur.fromPrivateKey(key).verify())
+                            return 'verify failed: ${key.toJson()}';
+                      } catch (error) {
+                        return '$error';
+                      }
+                    },
+                    onSaved: (value) {
+                      Currency cur = Currency.fromJson(currency);
+                      keyList = cur == null
+                          ? null
+                          : value
+                              .split('\\s+')
+                              .map((key) => cur.fromPrivateKeyJson(key))
+                              .toList();
+                    })),
         RaisedGradientButton(
           labelText: 'Create',
           padding: EdgeInsets.all(32),
@@ -251,12 +296,22 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
             widget.appState.setState(() => widget.appState.walletsLoading++);
             await Future.delayed(Duration(seconds: 1));
 
-            widget.appState.addWallet(Wallet.fromSeedPhrase(
-                widget.appState.getWalletFilename(name),
-                name,
-                Currency.fromJson(currency),
-                entropyToMnemonic(mnemonicToEntropy(seedPhrase)),
-                widget.appState.openedWallet));
+            if (hdWallet) {
+              widget.appState.addWallet(Wallet.fromSeedPhrase(
+                  widget.appState.getWalletFilename(name),
+                  name,
+                  Currency.fromJson(currency),
+                  entropyToMnemonic(mnemonicToEntropy(seedPhrase)),
+                  widget.appState.openedWallet));
+            } else {
+              widget.appState.addWallet(Wallet.fromPrivateKeyList(
+                  widget.appState.getWalletFilename(name),
+                  name,
+                  Currency.fromJson(currency),
+                  Seed(randBytes(64)),
+                  keyList,
+                  widget.appState.openedWallet));
+            }
 
             widget.appState.setState(() => widget.appState.walletsLoading--);
             if (!widget.welcome) Navigator.of(context).pop();

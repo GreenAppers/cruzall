@@ -1,7 +1,9 @@
 // Copyright 2019 cruzall developers
 // Use of this source code is governed by a MIT-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -10,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:trust_fall/trust_fall.dart';
+import 'package:tweetnacl/tweetnacl.dart' as tweetnacl;
 
 import 'package:cruzall/address.dart';
 import 'package:cruzawl/currency.dart';
@@ -54,6 +57,16 @@ class CruzallAppState extends State<CruzallApp> {
   @override
   void initState() {
     super.initState();
+
+    Uint8List testVector =
+        base64.decode('0JVc4TQg5shsqLNo6UDurejr4YUk8WUvYM+8lFAlAdI=');
+    Uint8List publicKey =
+        tweetnacl.Signature.keyPair_fromSeed(testVector).publicKey;
+    if ((base64.encode(publicKey) !=
+        'h6KFAcKAl9pi6cqfRJv5J0f3ffSh292+6MPO7Q92iF0=')) {
+      widget.appState.fatal = FlutterErrorDetails(
+          exception: FormatException('test vector failure'));
+    }
 
     if (!widget.appState.preferences.walletsEncrypted)
       widget.appState.openWallets();

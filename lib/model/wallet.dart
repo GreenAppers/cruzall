@@ -15,6 +15,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sembast/sembast.dart' as sembast;
 import 'package:sembast/sembast_io.dart';
+import 'package:tweetnacl/tweetnacl.dart' as tweetnacl;
 
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
@@ -68,7 +69,10 @@ class Wallet extends Model {
   Currency currency;
   sembast.Database storage;
   num balance = 0, maturesBalance = 0;
-  int activeAccountId = 0, pendingCount = 0, maturesHeight = 0;
+  int activeAccountId = 0,
+      pendingCount = 0,
+      maturesHeight = 0,
+      nextAddressIndex;
   Map<int, Account> accounts = <int, Account>{0: Account(0)};
   Map<String, Address> addresses = <String, Address>{};
   PriorityQueue<Transaction> maturing =
@@ -96,19 +100,34 @@ class Wallet extends Model {
     if (filename != null) openWalletStorage(filename, true, loaded);
   }
 
+  Wallet.fromPrivateKeyList(String filename, this.name, this.currency,
+      this.seed, List<PrivateKey> privateKeys,
+      [WalletCallback loaded]) {
+    if (filename != null)
+      openWalletStorage(filename, true, loaded, privateKeys);
+  }
+
   Wallet.fromFile(String filename, this.seed, [WalletCallback loaded])
       : name = 'loading',
         currency = const LoadingCurrency() {
     openWalletStorage(filename, false, loaded);
   }
 
+  bool get hdWallet => seedPhrase != null;
+
   Account get account => accounts[activeAccountId];
 
   Address getNextAddress() {
-    if (account.reserveAddress.length > 0)
-      return account.reserveAddress.entries.first.value;
-    else
-      return addNextAddress();
+    if (hdWallet) {
+      if (account.reserveAddress.length > 0)
+        return account.reserveAddress.entries.first.value;
+      else
+        return addNextAddress();
+    } else {
+      if (addresses.length <= 0) return null;
+      nextAddressIndex = ((nextAddressIndex ?? -1) + 1) % addresses.length;
+      return addresses.values.toList()[nextAddressIndex];
+    }
   }
 
   String bip44Path(int index, int coinType,
@@ -117,7 +136,7 @@ class Wallet extends Model {
   }
 
   Address deriveAddressWithPath(String path) =>
-      currency.deriveAddress(seed.data, path);
+      currency.deriveAddress(seed.data, path, debugPrint);
 
   Address deriveAddress(int index, {int accountId = 0, int change = 0}) =>
       deriveAddressWithPath(bip44Path(index, currency.bip44CoinType,
@@ -127,6 +146,7 @@ class Wallet extends Model {
 
   Address addNextAddress(
       {bool load = true, Account account, sembast.Transaction txn}) {
+    if (!hdWallet) return null;
     if (account == null) account = this.account;
     return addAddress(deriveAddress(account.nextIndex, accountId: account.id),
         load: load, txn: txn);
@@ -137,11 +157,16 @@ class Wallet extends Model {
     addresses[x.publicKey.toJson()] = x;
     if (store) storeAddress(x, txn);
     if (load) filterNetworkFor(x);
-    if (x.state == AddressState.reserve)
-      account.reserveAddress[x.chainIndex] = x;
-    if (x.chainIndex != null && x.chainIndex >= account.nextIndex) {
-      account.nextIndex = x.chainIndex + 1;
-      storeAccount(account, txn);
+    if (x.chainIndex != null) {
+      if (x.state == AddressState.reserve)
+        account.reserveAddress[x.chainIndex] = x;
+      if (x.chainIndex >= account.nextIndex) {
+        account.nextIndex = x.chainIndex + 1;
+        storeAccount(account, txn);
+      }
+    } else {
+      x.accountId = 0;
+      x.state = AddressState.used;
     }
     return x;
   }
@@ -153,15 +178,15 @@ class Wallet extends Model {
     return x;
   }
 
-  void openWalletStorage(String filename, bool create,
-      [WalletCallback opened]) async {
+  Future<void> openWalletStorage(String filename, bool create,
+      [WalletCallback opened, List<PrivateKey> privateKeys]) async {
     try {
       debugPrint((create ? 'Creating' : 'Opening') + ' wallet $filename ...');
-      if (create) assert(await File(filename).exists() == false);
-      storage = await databaseFactoryIo.openDatabase(
-        filename,
-        codec: getSalsa20SembastCodec(Uint8List.fromList(seed.data.sublist(32)))
-      );
+      if (create && await File(filename).exists())
+        throw FileSystemException('$filename already exists');
+      storage = await databaseFactoryIo.openDatabase(filename,
+          codec: getSalsa20SembastCodec(
+              Uint8List.fromList(seed.data.sublist(32))));
       walletStore = sembast.StoreRef<String, dynamic>.main();
       accountStore = sembast.intMapStoreFactory.store('accounts');
       addressStore = sembast.stringMapStoreFactory.store('addresses');
@@ -183,13 +208,25 @@ class Wallet extends Model {
         rethrow;
     }
 
-    await storage.transaction((txn) async {
-      for (Account account in accounts.values)
-        while (account.reserveAddress.length < 20) {
-          addNextAddress(account: account, load: false, txn: txn);
+    if (hdWallet) {
+      await storage.transaction((txn) async {
+        for (Account account in accounts.values)
+          while (account.reserveAddress.length < 20) {
+            addNextAddress(account: account, load: false, txn: txn);
+            await Future.delayed(Duration(seconds: 0));
+          }
+      });
+    }
+
+    if (privateKeys != null) {
+      if (privateKeys.length <= 0) return;
+      await storage.transaction((txn) async {
+        for (PrivateKey key in privateKeys) {
+          addAddress(currency.fromPrivateKey(key), load: false, txn: txn);
           await Future.delayed(Duration(seconds: 0));
         }
-    });
+      });
+    }
 
     if (opened != null) opened(this);
     notifyListeners();
@@ -295,10 +332,9 @@ class Wallet extends Model {
 
     List<Address> reloadAddresses = addresses.values.toList();
     List<Future<void>> reloading = List<Future<void>>(reloadAddresses.length);
-    for (int i=0; i<reloadAddresses.length; i++)
+    for (int i = 0; i < reloadAddresses.length; i++)
       reloading[i] = filterNetworkFor(reloadAddresses[i]);
-    for (int i=0; i<reloadAddresses.length; i++)
-      await reloading[i];
+    for (int i = 0; i < reloadAddresses.length; i++) await reloading[i];
 
     if (currency.network.hasPeer)
       (await currency.network.getPeer()).filterTransactionQueue();

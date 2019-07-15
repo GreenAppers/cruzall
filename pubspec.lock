@@ -167,7 +167,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "3f07089fdf29839138da1e5264a7f0cc67886cec"
+      resolved-ref: e780a161d7fbe9e04c9fe4593f0fa516e5012c4a
       url: "https://github.com/GreenAppers/dart-ed25519-hd-key"
     source: git
     version: "1.0.1"
@@ -551,7 +551,7 @@ packages:
       name: watcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.7+10"
+    version: "0.9.7+12"
   web_socket_channel:
     dependency: transitive
     description:

@@ -17,7 +17,7 @@ import 'package:cruzall/wallet.dart';
 
 class AddressWidget extends StatefulWidget {
   final Wallet wallet;
-  Address address;
+  final Address address;
   AddressWidget(this.wallet, this.address);
 
   @override
@@ -72,10 +72,11 @@ class _AddressWidgetState extends State<AddressWidget> {
       ),
     ];
 
-    top.add(HideableWidget(
-      title: 'Chain Code',
-      child: CopyableText(address.chainCode.toJson()),
-    ));
+    if (address.chainCode != null)
+      top.add(HideableWidget(
+        title: 'Chain Code',
+        child: CopyableText(address.chainCode.toJson()),
+      ));
 
     top.add(
       HideableWidget(
@@ -100,12 +101,13 @@ class _AddressWidgetState extends State<AddressWidget> {
         trailing: Text(address.accountId.toString()),
       ),
     );
-    header.add(
-      ListTile(
-        title: Text('Chain Index', style: labelTextStyle),
-        trailing: Text(address.chainIndex.toString()),
-      ),
-    );
+    if (address.chainIndex != null)
+      header.add(
+        ListTile(
+          title: Text('Chain Index', style: labelTextStyle),
+          trailing: Text(address.chainIndex.toString()),
+        ),
+      );
     header.add(
       ListTile(
         title: Text('State', style: labelTextStyle),
@@ -159,12 +161,9 @@ class _AddressWidgetState extends State<AddressWidget> {
     if (transactionIndex < transactions.length) {
       Transaction tx = transactions.data[transactionIndex];
       return TransactionListTile(
-        widget.wallet.currency,
-        tx,
-        WalletTransactionInfo(widget.wallet, tx),
-        onTap: (tx) =>
-            Navigator.of(context).pushNamed('/transaction/' + tx.id().toJson())
-      );
+          widget.wallet.currency, tx, WalletTransactionInfo(widget.wallet, tx),
+          onTap: (tx) => Navigator.of(context)
+              .pushNamed('/transaction/' + tx.id().toJson()));
     }
 
     assert(

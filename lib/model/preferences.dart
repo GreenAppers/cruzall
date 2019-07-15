@@ -10,7 +10,6 @@ import "package:pointycastle/digests/sha256.dart";
 import 'package:sembast/sembast.dart';
 
 import 'package:cruzawl/network.dart';
-import 'package:cruzawl/util.dart';
 import 'package:cruzall/model/sembast.dart';
 
 class CruzallPreferences extends SembastPreferences {
@@ -24,7 +23,8 @@ class CruzallPreferences extends SembastPreferences {
   set networkEnabled(bool value) => setPreference('networkEnabled', value);
 
   bool get insecureDeviceWarning => data['insecureDeviceWarning'] ?? true;
-  set insecureDeviceWarning(bool value) => setPreference('insecureDeviceWarning', value);
+  set insecureDeviceWarning(bool value) =>
+      setPreference('insecureDeviceWarning', value);
 
   bool get walletNameInTitle => data['walletNameInTitle'] ?? false;
   set walletNameInTitle(bool value) =>

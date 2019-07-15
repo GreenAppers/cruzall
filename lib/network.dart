@@ -236,7 +236,8 @@ class _AddPeerWidgetState extends State<AddPeerWidget> {
             Scaffold.of(context)
                 .showSnackBar(SnackBar(content: Text('Creating...')));
 
-            String options = PeerPreference.formatOptions(ignoreBadCert: !certRequired);
+            String options =
+                PeerPreference.formatOptions(ignoreBadCert: !certRequired);
             peers.add(PeerPreference(name, url, currency.ticker, options));
             appState.preferences.peers = peers;
             if (peers.length == 1) appState.connectPeers(currency);

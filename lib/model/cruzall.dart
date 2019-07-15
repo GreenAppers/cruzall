@@ -51,8 +51,10 @@ class Cruzall extends Model {
 
   void openedWallet(Wallet x) {
     if (x.fatal != null) {
-      fatal = x.fatal;
-      debugPrint(fatal.toString());
+      if (fatal == null) {
+        fatal = x.fatal;
+        debugPrint(fatal.toString());
+      }
     } else {
       walletsLoading--;
     }
