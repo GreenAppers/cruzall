@@ -83,6 +83,16 @@ class CruzallAppState extends State<CruzallApp> {
         themes[appState.preferences.theme] ?? themes['deepOrange'];
 
     if (appState.wallets.length == 0) {
+      if (appState.fatal != null)
+        return MaterialApp(
+          title: 'cruzall',
+          theme: theme,
+          home: SimpleScaffold(
+            'Cruzall',
+            ErrorWidget.builder(appState.fatal)
+          ),
+        );
+
       if (appState.preferences.walletsEncrypted)
         return MaterialApp(
           title: 'cruzall',

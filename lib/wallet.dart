@@ -8,12 +8,14 @@ import 'package:bip39/bip39.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:cruzawl/currency.dart';
+import 'package:cruzawl/test.dart';
 import 'package:cruzawl/util.dart';
 
 import 'package:cruzall/address.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/model/cruzall.dart';
+import 'package:cruzall/model/test.dart';
 import 'package:cruzall/model/wallet.dart';
 
 class WalletWidget extends StatelessWidget {
@@ -295,6 +297,21 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                 .showSnackBar(SnackBar(content: Text('Creating...')));
             widget.appState.setState(() => widget.appState.walletsLoading++);
             await Future.delayed(Duration(seconds: 1));
+
+            debugPrint('running unit tests');
+            TestCallback testCallback = (n, f) {
+              debugPrint('testing $n');
+              f();
+            };
+            ExpectCallback expectCallback = (x, y) {
+              if (!(x == y))
+                widget.appState.setState(() => widget.appState.fatal =
+                    FlutterErrorDetails(
+                        exception: FormatException('unit test failure')));
+            };
+            CruzTest(testCallback, testCallback, expectCallback).run();
+            WalletTest(testCallback, testCallback, expectCallback).run();
+            if (widget.appState.fatal != null) return;
 
             if (hdWallet) {
               widget.appState.addWallet(Wallet.fromSeedPhrase(

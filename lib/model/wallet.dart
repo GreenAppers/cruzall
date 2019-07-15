@@ -154,6 +154,8 @@ class Wallet extends Model {
 
   Address addAddress(Address x,
       {bool store = true, bool load = true, sembast.Transaction txn}) {
+    if (!x.verify())
+      throw FormatException('${x.publicKey.toJson()} verify failed');
     addresses[x.publicKey.toJson()] = x;
     if (store) storeAddress(x, txn);
     if (load) filterNetworkFor(x);
