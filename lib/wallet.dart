@@ -27,6 +27,7 @@ class WalletWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Cruzall appState = ScopedModel.of<Cruzall>(context);
     final TextStyle labelTextStyle = TextStyle(
       fontFamily: 'MartelSans',
       color: Colors.grey,
@@ -76,7 +77,7 @@ class WalletWidget extends StatelessWidget {
               subtitle: Text(
                   'Once you delete a wallet, there is no going back. Please be certain.'),
               trailing: RaisedButton(
-                onPressed: () => deleteWallet(context),
+                onPressed: () => deleteWallet(context, appState),
                 textColor: Colors.red,
                 child: Text('Delete this wallet'),
               ),
@@ -87,6 +88,44 @@ class WalletWidget extends StatelessWidget {
     ];
 
     List<Widget> footer = <Widget>[
+      RaisedGradientButton(
+        labelText: 'Verify',
+        padding: EdgeInsets.all(32),
+        onPressed: () async {
+          Scaffold.of(context)
+              .showSnackBar(SnackBar(content: Text('Verifying...')));
+          await Future.delayed(Duration(seconds: 1));
+
+          int verifiedAddresses = 0, ranTests = appState.runUnitTests();
+          bool unitTests = ranTests >= 0;
+          if (unitTests)
+            for (Address address in addresses)
+              verifiedAddresses += address.verify() ? 1 : 0;
+
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              content: TitledWidget(
+                title: 'Verify',
+                content: ListTile(
+                  leading: Icon(unitTests ? Icons.check : Icons.close),
+                  title: Text(unitTests
+                      ? 'Verified $verifiedAddresses/${addresses.length} addresses and ${ranTests}/${ranTests} tests succeeded'
+                      : 'Unit test failure'),
+                ),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: const Text('Ok'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+            ),
+          );
+        },
+      ),
       RaisedGradientButton(
         labelText: 'Copy Public Keys',
         padding: EdgeInsets.all(32),
@@ -125,8 +164,7 @@ class WalletWidget extends StatelessWidget {
     );
   }
 
-  void deleteWallet(BuildContext context) {
-    final Cruzall appState = ScopedModel.of<Cruzall>(context);
+  void deleteWallet(BuildContext context, Cruzall appState) {
     if (appState.wallets.length < 2) {
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text("Can't delete the only wallet.")));
@@ -293,32 +331,21 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
             if (!formKey.currentState.validate()) return;
             formKey.currentState.save();
             FocusScope.of(context).requestFocus(FocusNode());
-            Scaffold.of(context)
-                .showSnackBar(SnackBar(content: Text('Creating...')));
+            Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('Creating... (PBKDF: 2048 iterations)')));
             widget.appState.setState(() => widget.appState.walletsLoading++);
             await Future.delayed(Duration(seconds: 1));
 
-            debugPrint('running unit tests');
-            TestCallback testCallback = (n, f) {
-              debugPrint('testing $n');
-              f();
-            };
-            ExpectCallback expectCallback = (x, y) {
-              if (!(x == y))
-                widget.appState.setState(() => widget.appState.fatal =
-                    FlutterErrorDetails(
-                        exception: FormatException('unit test failure')));
-            };
-            CruzTest(testCallback, testCallback, expectCallback).run();
-            WalletTest(testCallback, testCallback, expectCallback).run();
-            if (widget.appState.fatal != null) return;
+            if (widget.appState.preferences.unitTestBeforeCreating &&
+                widget.appState.runUnitTests() < 0) return;
 
             if (hdWallet) {
               widget.appState.addWallet(Wallet.fromSeedPhrase(
                   widget.appState.getWalletFilename(name),
                   name,
                   Currency.fromJson(currency),
-                  entropyToMnemonic(mnemonicToEntropy(seedPhrase)),
+                  seedPhrase,
+                  widget.appState.preferences,
                   widget.appState.openedWallet));
             } else {
               widget.appState.addWallet(Wallet.fromPrivateKeyList(
@@ -327,6 +354,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                   Currency.fromJson(currency),
                   Seed(randBytes(64)),
                   keyList,
+                  widget.appState.preferences,
                   widget.appState.openedWallet));
             }
 

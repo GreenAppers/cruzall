@@ -21,6 +21,10 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         ScopedModel.of<Cruzall>(context, rebuildOnChange: true);
     final bool encryptionEnabled = appState.preferences.walletsEncrypted;
     final bool warningEnabled = appState.preferences.insecureDeviceWarning;
+    final bool unitTestBeforeCreating =
+        appState.preferences.unitTestBeforeCreating;
+    final bool verifyAddressEveryLoad =
+        appState.preferences.verifyAddressEveryLoad;
     return ListView(
       padding: EdgeInsets.only(top: 20),
       children: <Widget>[
@@ -66,6 +70,26 @@ class _CruzallSettingsState extends State<CruzallSettings> {
             value: warningEnabled,
             onChanged: (bool value) => setState(
                 () => appState.preferences.insecureDeviceWarning = value),
+          ),
+        ),
+        ListTile(
+          leading: Icon(
+              verifyAddressEveryLoad ? Icons.lock_outline : Icons.lock_open),
+          title: Text('Verify key pairs every load'),
+          trailing: Switch(
+            value: verifyAddressEveryLoad,
+            onChanged: (bool value) => setState(
+                () => appState.preferences.verifyAddressEveryLoad = value),
+          ),
+        ),
+        ListTile(
+          leading: Icon(
+              unitTestBeforeCreating ? Icons.lock_outline : Icons.lock_open),
+          title: Text('Unit test before creating wallets'),
+          trailing: Switch(
+            value: unitTestBeforeCreating,
+            onChanged: (bool value) => setState(
+                () => appState.preferences.unitTestBeforeCreating = value),
           ),
         ),
         ListTile(

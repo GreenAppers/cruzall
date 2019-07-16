@@ -11,7 +11,8 @@ import 'package:cruzawl/test.dart';
 import 'package:cruzall/model/wallet.dart';
 
 class WalletTest extends TestRunner {
-  WalletTest(TestCallback group, TestCallback test, ExpectCallback expect) : super(group, test, expect);
+  WalletTest(TestCallback group, TestCallback test, ExpectCallback expect)
+      : super(group, test, expect);
 
   void run() {
     group('SLIP 0010 Test vector 1 for ed25519', () {
@@ -22,7 +23,7 @@ class WalletTest extends TestRunner {
           Seed(hex.decode(
               'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542')));
       CruzAddress addr1, addr2;
-    
+
       test("m/0'", () {
         addr1 = wallet.deriveAddressWithPath("m/0'");
         expect(hex.encode(addr1.privateKey.data.buffer.asUint8List(0, 32)),
@@ -32,7 +33,7 @@ class WalletTest extends TestRunner {
         expect(hex.encode(addr1.chainCode.data),
             '0b78a3226f915c082bf118f83618a618ab6dec793752624cbeb622acb562862d');
       });
-    
+
       test("m/0'/2147483647'/1'/2147483646'/2'", () {
         addr2 =
             wallet.deriveAddressWithPath("m/0'/2147483647'/1'/2147483646'/2'");
@@ -43,10 +44,11 @@ class WalletTest extends TestRunner {
         expect(hex.encode(addr2.chainCode.data),
             '5d70af781f3a37b829f0d060924d5e960bdc02e85423494afc0b1a41bbe196d4');
       });
-    
+
       test('transaction', () {
         CruzTransaction tx = CruzTransaction(addr1.publicKey, addr2.publicKey,
-            50 * CRUZ.cruzbitsPerCruz, 0, 'for lunch', height: 0);
+            50 * CRUZ.cruzbitsPerCruz, 0, 'for lunch',
+            height: 0);
         tx.sign(addr1.privateKey);
         expect(tx.verify(), true);
         tx.sign(addr2.privateKey);

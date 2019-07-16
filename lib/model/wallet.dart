@@ -17,6 +17,7 @@ import 'package:sembast/sembast.dart' as sembast;
 import 'package:sembast/sembast_io.dart';
 import 'package:tweetnacl/tweetnacl.dart' as tweetnacl;
 
+import 'package:cruzall/cruzawl-ui/preferences.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
 import 'package:cruzawl/sembast.dart';
@@ -72,7 +73,8 @@ class Wallet extends Model {
   int activeAccountId = 0,
       pendingCount = 0,
       maturesHeight = 0,
-      nextAddressIndex;
+      nextAddressIndex,
+      minimumReserveAddress = 5;
   Map<int, Account> accounts = <int, Account>{0: Account(0)};
   Map<String, Address> addresses = <String, Address>{};
   PriorityQueue<Transaction> maturing =
@@ -83,31 +85,33 @@ class Wallet extends Model {
   var walletStore, accountStore, addressStore, pendingStore;
   VoidCallback balanceChanged;
   FlutterErrorDetails fatal;
+  CruzallPreferences preferences;
 
   Wallet.generate(String filename, String name, Currency currency,
-      [WalletCallback loaded])
+      [CruzallPreferences prefs, WalletCallback loaded])
       : this.fromSeedPhrase(
-            filename, name, currency, generateMnemonic(), loaded);
+            filename, name, currency, generateMnemonic(), prefs, loaded);
 
   Wallet.fromSeedPhrase(
       String filename, String name, Currency currency, String seedPhrase,
-      [WalletCallback loaded])
+      [CruzallPreferences prefs, WalletCallback loaded])
       : this.fromSeed(filename, name, currency,
-            Seed(mnemonicToSeed(seedPhrase)), seedPhrase, loaded);
+            Seed(mnemonicToSeed(seedPhrase)), seedPhrase, prefs, loaded);
 
   Wallet.fromSeed(String filename, this.name, this.currency, this.seed,
-      [this.seedPhrase, WalletCallback loaded]) {
+      [this.seedPhrase, this.preferences, WalletCallback loaded]) {
     if (filename != null) openWalletStorage(filename, true, loaded);
   }
 
   Wallet.fromPrivateKeyList(String filename, this.name, this.currency,
       this.seed, List<PrivateKey> privateKeys,
-      [WalletCallback loaded]) {
+      [this.preferences, WalletCallback loaded]) {
     if (filename != null)
       openWalletStorage(filename, true, loaded, privateKeys);
   }
 
-  Wallet.fromFile(String filename, this.seed, [WalletCallback loaded])
+  Wallet.fromFile(String filename, this.seed,
+      [this.preferences, WalletCallback loaded])
       : name = 'loading',
         currency = const LoadingCurrency() {
     openWalletStorage(filename, false, loaded);
@@ -154,7 +158,9 @@ class Wallet extends Model {
 
   Address addAddress(Address x,
       {bool store = true, bool load = true, sembast.Transaction txn}) {
-    if (!x.verify())
+    if (preferences != null &&
+        preferences.verifyAddressEveryLoad &&
+        !x.verify())
       throw FormatException('${x.publicKey.toJson()} verify failed');
     addresses[x.publicKey.toJson()] = x;
     if (store) storeAddress(x, txn);
@@ -213,7 +219,7 @@ class Wallet extends Model {
     if (hdWallet) {
       await storage.transaction((txn) async {
         for (Account account in accounts.values)
-          while (account.reserveAddress.length < 20) {
+          while (account.reserveAddress.length < minimumReserveAddress) {
             addNextAddress(account: account, load: false, txn: txn);
             await Future.delayed(Duration(seconds: 0));
           }
@@ -373,8 +379,10 @@ class Wallet extends Model {
   Future<TransactionIteratorResults> getNextTransactions(
       Peer peer, Address x) async {
     if (x.loadedHeight != null) {
-      if (x.loadedIndex == 0) x.loadedHeight--;
-      else x.loadedIndex--;
+      if (x.loadedIndex == 0)
+        x.loadedHeight--;
+      else
+        x.loadedIndex--;
     }
     TransactionIteratorResults results = await peer.getTransactions(
       x.publicKey,

@@ -3,16 +3,20 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
 import 'package:package_info/package_info.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:tweetnacl/tweetnacl.dart' as tweetnacl;
 
 import 'package:cruzall/cruzawl-ui/preferences.dart';
+import 'package:cruzall/model/test.dart';
+import 'package:cruzall/model/wallet.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
-import 'package:cruzall/model/wallet.dart';
+import 'package:cruzawl/test.dart';
 
 class Cruzall extends Model {
   CruzallPreferences preferences;
@@ -44,8 +48,8 @@ class Cruzall extends Model {
   void openWallets() {
     Map<String, String> loadedWallets = preferences.wallets;
     loadedWallets.forEach((k, v) => addWallet(
-        Wallet.fromFile(
-            getWalletFilename(k), Seed(base64.decode(v)), openedWallet),
+        Wallet.fromFile(getWalletFilename(k), Seed(base64.decode(v)),
+            preferences, openedWallet),
         store: false));
   }
 
@@ -124,5 +128,39 @@ class Cruzall extends Model {
     currency.network.tipChanged = () => updateWallets(currency);
     currency.network.peerChanged = () => reloadWallets(currency);
     return currency.network.addPeerWithSpec(x, currency.genesisBlockId());
+  }
+
+  bool runQuickTestVector() {
+    Uint8List testVector =
+        base64.decode('0JVc4TQg5shsqLNo6UDurejr4YUk8WUvYM+8lFAlAdI=');
+    Uint8List publicKey =
+        tweetnacl.Signature.keyPair_fromSeed(testVector).publicKey;
+    if ((base64.encode(publicKey) !=
+        'h6KFAcKAl9pi6cqfRJv5J0f3ffSh292+6MPO7Q92iF0=')) {
+      fatal = FlutterErrorDetails(
+          exception: FormatException('test vector failure'));
+      return false;
+    }
+    return true;
+  }
+
+  int runUnitTests() {
+    int tests = 0;
+    debugPrint('running unit tests');
+    TestCallback testCallback = (n, f) {
+      debugPrint('testing $n');
+      tests++;
+      f();
+    };
+    ExpectCallback expectCallback = (x, y) {
+      if (!(x == y))
+        setState(() => fatal = FlutterErrorDetails(
+            exception: FormatException('unit test failure')));
+    };
+    CruzTest(testCallback, testCallback, expectCallback).run();
+    WalletTest(testCallback, testCallback, expectCallback).run();
+    if (fatal != null) return -1;
+    debugPrint('unit tests succeeded');
+    return tests;
   }
 }
