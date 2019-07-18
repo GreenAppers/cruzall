@@ -23,7 +23,7 @@ packages:
     source: hosted
     version: "2.2.0"
   bip39:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: bip39
       url: "https://pub.dartlang.org"

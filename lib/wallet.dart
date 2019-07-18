@@ -10,13 +10,12 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/test.dart';
 import 'package:cruzawl/util.dart';
+import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/address.dart';
+import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
-import 'package:cruzall/model/cruzall.dart';
-import 'package:cruzall/model/test.dart';
-import 'package:cruzall/model/wallet.dart';
 
 class WalletWidget extends StatelessWidget {
   final Wallet wallet;
@@ -27,7 +26,7 @@ class WalletWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Cruzall appState = ScopedModel.of<Cruzall>(context);
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final TextStyle labelTextStyle = TextStyle(
       fontFamily: 'MartelSans',
       color: Colors.grey,
@@ -164,7 +163,7 @@ class WalletWidget extends StatelessWidget {
     );
   }
 
-  void deleteWallet(BuildContext context, Cruzall appState) {
+  void deleteWallet(BuildContext context, Cruzawl appState) {
     if (appState.wallets.length < 2) {
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text("Can't delete the only wallet.")));
@@ -206,7 +205,7 @@ class WalletWidget extends StatelessWidget {
 }
 
 class AddWalletWidget extends StatefulWidget {
-  final Cruzall appState;
+  final Cruzawl appState;
   final bool welcome;
   AddWalletWidget(this.appState, {this.welcome = false});
 
@@ -258,7 +257,8 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
               labelText: 'Name',
             ),
             validator: (value) {
-              if (widget.appState.wallets.indexWhere((v) => v.name == value) !=
+              if (widget.appState.wallets
+                      .indexWhere((v) => v.wallet.name == value) !=
                   -1) return 'Name must be unique.';
               return null;
             },
@@ -346,6 +346,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                   Currency.fromJson(currency),
                   seedPhrase,
                   widget.appState.preferences,
+                  debugPrint,
                   widget.appState.openedWallet));
             } else {
               widget.appState.addWallet(Wallet.fromPrivateKeyList(
@@ -355,6 +356,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                   Seed(randBytes(64)),
                   keyList,
                   widget.appState.preferences,
+                  debugPrint,
                   widget.appState.openedWallet));
             }
 

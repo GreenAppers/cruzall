@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:cruzawl/currency.dart';
-import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzawl/network.dart';
+import 'package:cruzawl/wallet.dart';
+
 import 'package:cruzall/address.dart';
-import 'package:cruzall/model/wallet.dart';
+import 'package:cruzall/cruzawl-ui/model.dart';
+import 'package:cruzall/cruzawl-ui/ui.dart';
 
 class WalletSendWidget extends StatefulWidget {
   final Wallet wallet;
@@ -36,7 +38,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
   @override
   Widget build(BuildContext context) {
     final Wallet wallet =
-        ScopedModel.of<Wallet>(context, rebuildOnChange: true);
+        ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
     final Currency currency = wallet.currency;
     final TextStyle labelTextStyle = TextStyle(fontFamily: 'MartelSans');
 

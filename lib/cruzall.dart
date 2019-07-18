@@ -7,16 +7,17 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:cruzawl/currency.dart';
+import 'package:cruzawl/wallet.dart';
+
+import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/balance.dart';
-import 'package:cruzall/model/cruzall.dart';
-import 'package:cruzall/model/wallet.dart';
 import 'package:cruzall/receive.dart';
 import 'package:cruzall/send.dart';
 
 class CruzallWidget extends StatefulWidget {
   final Wallet wallet;
-  final Cruzall appState;
+  final Cruzawl appState;
   CruzallWidget(this.wallet, this.appState);
 
   @override
@@ -122,10 +123,10 @@ class _CruzallWidgetState extends State<CruzallWidget> {
     final ThemeData theme = Theme.of(context);
 
     final PopupMenuBuilder walletsMenu = PopupMenuBuilder();
-    for (Wallet x in widget.appState.wallets) {
-      bool activeWallet = x.name == widget.wallet.name;
+    for (WalletModel x in widget.appState.wallets) {
+      bool activeWallet = x.wallet.name == widget.wallet.name;
       walletsMenu.addItem(
-        text: x.name,
+        text: x.wallet.name,
         icon: Icon(
             activeWallet ? Icons.check_box : Icons.check_box_outline_blank),
         onSelected: activeWallet
@@ -186,7 +187,7 @@ class _UnlockCruzallWidgetState extends State<UnlockCruzallWidget> {
 
   @override
   Widget build(BuildContext c) {
-    final Cruzall appState = ScopedModel.of<Cruzall>(context);
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
 
     return Form(
       key: formKey,

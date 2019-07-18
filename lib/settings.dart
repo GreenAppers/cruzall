@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:cruzall/cruzawl-ui/preferences.dart';
+import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/model/cruzall.dart';
+import 'package:cruzawl/preferences.dart';
 
 class CruzallSettings extends StatefulWidget {
   @override
@@ -17,8 +17,8 @@ class CruzallSettings extends StatefulWidget {
 class _CruzallSettingsState extends State<CruzallSettings> {
   @override
   Widget build(BuildContext context) {
-    final Cruzall appState =
-        ScopedModel.of<Cruzall>(context, rebuildOnChange: true);
+    final Cruzawl appState =
+        ScopedModel.of<Cruzawl>(context, rebuildOnChange: true);
     final bool encryptionEnabled = appState.preferences.walletsEncrypted;
     final bool warningEnabled = appState.preferences.insecureDeviceWarning;
     final bool unitTestBeforeCreating =

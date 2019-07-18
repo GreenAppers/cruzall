@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'package:cruzawl/currency.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
+import 'package:cruzall/wallet.dart';
+import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
 import 'package:cruzawl/util.dart';
-import 'package:cruzall/model/wallet.dart';
-import 'package:cruzall/wallet.dart';
+import 'package:cruzawl/wallet.dart';
 
 class AddressWidget extends StatefulWidget {
   final Wallet wallet;

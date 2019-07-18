@@ -13,18 +13,19 @@ import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:trust_fall/trust_fall.dart';
 
-import 'package:cruzall/address.dart';
 import 'package:cruzawl/currency.dart';
+import 'package:cruzawl/preferences.dart';
+import 'package:cruzawl/wallet.dart';
+
+import 'package:cruzall/address.dart';
 import 'package:cruzall/cruzall.dart';
 import 'package:cruzall/cruzawl-ui/address.dart';
 import 'package:cruzall/cruzawl-ui/block.dart';
 import 'package:cruzall/cruzawl-ui/cruzbase.dart';
-import 'package:cruzall/cruzawl-ui/preferences.dart';
+import 'package:cruzall/cruzawl-ui/model.dart';
+import 'package:cruzall/cruzawl-ui/network.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/model/cruzall.dart';
-import 'package:cruzall/model/wallet.dart';
-import 'package:cruzall/network.dart';
 import 'package:cruzall/send.dart';
 import 'package:cruzall/settings.dart';
 import 'package:cruzall/wallet.dart';
@@ -34,9 +35,9 @@ void main() async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   Directory dataDir = await getApplicationDocumentsDirectory();
   debugPrint('main trustFall=${isTrustFall}, dataDir=${dataDir.path}');
-  CruzallPreferences preferences = CruzallPreferences(await databaseFactoryIo
+  CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzall appState = Cruzall(await preferences.load(), dataDir,
+  Cruzawl appState = Cruzawl(await preferences.load(), dataDir,
       packageInfo: packageInfo, isTrustFall: isTrustFall);
   runApp(ScopedModel(
     model: appState,
@@ -45,7 +46,7 @@ void main() async {
 }
 
 class CruzallApp extends StatefulWidget {
-  final Cruzall appState;
+  final Cruzawl appState;
   CruzallApp(this.appState);
 
   @override
@@ -67,8 +68,8 @@ class CruzallAppState extends State<CruzallApp> {
 
   @override
   Widget build(BuildContext context) {
-    final Cruzall appState =
-        ScopedModel.of<Cruzall>(context, rebuildOnChange: true);
+    final Cruzawl appState =
+        ScopedModel.of<Cruzawl>(context, rebuildOnChange: true);
     final ThemeData theme =
         themes[appState.preferences.theme] ?? themes['deepOrange'];
 
@@ -77,7 +78,8 @@ class CruzallAppState extends State<CruzallApp> {
         return MaterialApp(
           title: 'cruzall',
           theme: theme,
-          home: SimpleScaffold('Cruzall', ErrorWidget.builder(appState.fatal)),
+          home: SimpleScaffold(ErrorWidget.builder(appState.fatal),
+              title: 'Cruzall'),
         );
 
       if (appState.preferences.walletsEncrypted)
@@ -85,8 +87,8 @@ class CruzallAppState extends State<CruzallApp> {
           title: 'cruzall',
           theme: theme,
           home: SimpleScaffold(
-            'Unlock Cruzall',
             UnlockCruzallWidget(),
+            title: 'Unlock Cruzall',
           ),
         );
 
@@ -94,7 +96,6 @@ class CruzallAppState extends State<CruzallApp> {
         title: 'cruzall',
         theme: theme,
         home: SimpleScaffold(
-          'Welcome to Cruzall',
           Column(
             children: <Widget>[
               Container(
@@ -106,11 +107,12 @@ class CruzallAppState extends State<CruzallApp> {
               ),
             ],
           ),
+          title: 'Welcome to Cruzall',
         ),
       );
     }
 
-    final Wallet wallet = appState.wallet;
+    final Wallet wallet = appState.wallet.wallet;
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'cruzall',
@@ -121,19 +123,23 @@ class CruzallAppState extends State<CruzallApp> {
         ),
         routes: <String, WidgetBuilder>{
           '/settings': (BuildContext context) =>
-              SimpleScaffold('Settings', CruzallSettings()),
-          '/network': (BuildContext context) => SimpleScaffold(
-              wallet.currency.ticker + ' Network', CruzallNetworkSettings()),
+              SimpleScaffold(CruzallSettings(), title: 'Settings'),
+          '/network': (BuildContext context) => ScopedModel(
+              model: appState.wallet,
+              child: ScopedModelDescendant<WalletModel>(
+                  builder: (context, child, model) => SimpleScaffold(
+                      CruzawlNetworkSettings(),
+                      title: wallet.currency.ticker + ' Network'))),
           '/wallet': (BuildContext context) =>
-              SimpleScaffold(wallet.name, WalletWidget(wallet)),
+              SimpleScaffold(WalletWidget(wallet), title: wallet.name),
           '/addWallet': (BuildContext context) =>
-              SimpleScaffold('New Wallet', AddWalletWidget(appState)),
+              SimpleScaffold(AddWalletWidget(appState), title: 'New Wallet'),
           '/addPeer': (BuildContext context) =>
-              SimpleScaffold('New Peer', AddPeerWidget()),
+              SimpleScaffold(AddPeerWidget(), title: 'New Peer'),
           '/sendFrom': (BuildContext context) =>
-              SimpleScaffold('From', SendFromWidget(wallet)),
+              SimpleScaffold(SendFromWidget(wallet), title: 'From'),
           '/enableEncryption': (BuildContext context) =>
-              SimpleScaffold('Encryption', EnableEncryptionWidget()),
+              SimpleScaffold(EnableEncryptionWidget(), title: 'Encryption'),
         },
         onGenerateRoute: (settings) {
           final String name = settings.name;
@@ -153,11 +159,11 @@ class CruzallAppState extends State<CruzallApp> {
 
                   Address address = wallet.addresses[addressText];
                   return address != null
-                      ? SimpleScaffold(
-                          'Address', AddressWidget(wallet, address))
+                      ? SimpleScaffold(AddressWidget(wallet, address),
+                          title: 'Address')
                       : ScopedModel(
-                          model: wallet,
-                          child: ScopedModelDescendant<Wallet>(
+                          model: appState.wallet,
+                          child: ScopedModelDescendant<WalletModel>(
                               builder: (context, child, model) =>
                                   ExternalAddressWidget(
                                       wallet.currency, addressText,
@@ -167,8 +173,8 @@ class CruzallAppState extends State<CruzallApp> {
             return MaterialPageRoute(
               settings: settings,
               builder: (context) => ScopedModel(
-                model: wallet,
-                child: ScopedModelDescendant<Wallet>(
+                model: appState.wallet,
+                child: ScopedModelDescendant<WalletModel>(
                   builder: (context, child, model) => BlockWidget(
                       wallet.currency,
                       blockId: name.substring(block.length)),
@@ -179,8 +185,8 @@ class CruzallAppState extends State<CruzallApp> {
             return MaterialPageRoute(
               settings: settings,
               builder: (context) => ScopedModel(
-                model: wallet,
-                child: ScopedModelDescendant<Wallet>(
+                model: appState.wallet,
+                child: ScopedModelDescendant<WalletModel>(
                   builder: (context, child, model) => BlockWidget(
                       wallet.currency,
                       blockHeight: int.parse(name.substring(height.length))),
@@ -192,8 +198,8 @@ class CruzallAppState extends State<CruzallApp> {
             return MaterialPageRoute(
               settings: settings,
               builder: (context) => ScopedModel(
-                model: wallet,
-                child: ScopedModelDescendant<Wallet>(
+                model: appState.wallet,
+                child: ScopedModelDescendant<WalletModel>(
                     builder: (context, child, model) {
                   Transaction transaction =
                       wallet.transactionIds[transactionIdText];

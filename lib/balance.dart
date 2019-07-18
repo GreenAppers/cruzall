@@ -6,16 +6,18 @@ import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzawl/currency.dart';
-import 'package:cruzall/model/wallet.dart';
+import 'package:cruzawl/wallet.dart';
+
+import 'package:cruzall/cruzawl-ui/model.dart';
+import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/wallet.dart';
 
 class WalletBalanceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Wallet wallet =
-        ScopedModel.of<Wallet>(context, rebuildOnChange: true);
+        ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
     final Currency currency = wallet.currency;
     final int numTransactions = wallet.transactions.data.length;
     final bool hasPeer =

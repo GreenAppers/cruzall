@@ -9,8 +9,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:cruzawl/currency.dart';
+import 'package:cruzawl/wallet.dart';
+
+import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/model/wallet.dart';
 
 class WalletReceiveWidget extends StatefulWidget {
   @override
@@ -22,7 +24,7 @@ class _WalletReceiveWidgetState extends State<WalletReceiveWidget> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final Wallet wallet =
-        ScopedModel.of<Wallet>(context, rebuildOnChange: true);
+        ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
     final Address address = wallet.getNextAddress();
     final Size screenSize = MediaQuery.of(context).size;
     final String addressText = address.publicKey.toJson();
