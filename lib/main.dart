@@ -7,7 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import 'package:package_info/package_info.dart';
+import 'package:package_info/package_info.dart' as packageinfo;
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -32,13 +32,16 @@ import 'package:cruzall/wallet.dart';
 
 void main() async {
   bool isTrustFall = await TrustFall.isTrustFall;
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  packageinfo.PackageInfo info =
+      await packageinfo.PackageInfo.fromPlatform();
   Directory dataDir = await getApplicationDocumentsDirectory();
   debugPrint('main trustFall=${isTrustFall}, dataDir=${dataDir.path}');
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzawl appState = Cruzawl(await preferences.load(), dataDir,
-      packageInfo: packageInfo, isTrustFall: isTrustFall);
+  Cruzawl appState = Cruzawl(databaseFactoryIo, await preferences.load(), dataDir,
+      packageInfo: PackageInfo(
+          info.appName, info.packageName, info.version, info.buildNumber),
+      isTrustFall: isTrustFall);
   runApp(ScopedModel(
     model: appState,
     child: CruzallApp(appState),
