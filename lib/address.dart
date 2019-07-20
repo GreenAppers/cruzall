@@ -6,14 +6,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-import 'package:cruzall/cruzawl-ui/transaction.dart';
-import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/wallet.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/network.dart';
 import 'package:cruzawl/util.dart';
 import 'package:cruzawl/wallet.dart';
+
+import 'package:cruzall/cruzawl-ui/model.dart';
+import 'package:cruzall/cruzawl-ui/transaction.dart';
+import 'package:cruzall/cruzawl-ui/ui.dart';
+import 'package:cruzall/wallet.dart';
 
 class AddressWidget extends StatefulWidget {
   final Wallet wallet;
@@ -51,6 +54,7 @@ class _AddressWidgetState extends State<AddressWidget> {
   Widget build(BuildContext context) {
     final Address address = widget.address;
     final String addressText = address.publicKey.toJson();
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final bool fullyLoaded =
         address.loadedHeight == 0 && address.loadedIndex == 0;
@@ -68,20 +72,22 @@ class _AddressWidgetState extends State<AddressWidget> {
       ),
       Container(
         padding: EdgeInsets.only(right: 32),
-        child: CopyableText(addressText),
+        child: CopyableText(addressText, appState.setClipboardText),
       ),
     ];
 
     if (address.chainCode != null)
       top.add(HideableWidget(
         title: 'Chain Code',
-        child: CopyableText(address.chainCode.toJson()),
+        child:
+            CopyableText(address.chainCode.toJson(), appState.setClipboardText),
       ));
 
     top.add(
       HideableWidget(
         title: 'Private Key',
-        child: CopyableText(address.privateKey.toJson()),
+        child: CopyableText(
+            address.privateKey.toJson(), appState.setClipboardText),
       ),
     );
 

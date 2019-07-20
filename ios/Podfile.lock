@@ -1,6 +1,10 @@
 PODS:
+  - barcode_scan (0.0.1):
+    - Flutter
+    - MTBBarcodeScanner
   - DTTJailbreakDetection (0.4.0)
   - Flutter (1.0.0)
+  - MTBBarcodeScanner (5.0.8)
   - package_info (0.0.1):
     - Flutter
   - path_provider (0.0.1):
@@ -10,6 +14,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - barcode_scan (from `.symlinks/plugins/barcode_scan/ios`)
   - Flutter (from `.symlinks/flutter/ios-release`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -18,8 +23,11 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - DTTJailbreakDetection
+    - MTBBarcodeScanner
 
 EXTERNAL SOURCES:
+  barcode_scan:
+    :path: ".symlinks/plugins/barcode_scan/ios"
   Flutter:
     :path: ".symlinks/flutter/ios-release"
   package_info:
@@ -30,8 +38,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/trust_fall/ios"
 
 SPEC CHECKSUMS:
+  barcode_scan: 33f586d02270046fc6559135038b34b5754eaa4f
   DTTJailbreakDetection: 5e356c5badc17995f65a83ed9483f787a0057b71
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  MTBBarcodeScanner: 5b97f10a037e2560ff104da413343c5ce9413911
   package_info: 78cabb3c322943c55d39676f4a5bfc748c01d055
   path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
   trust_fall: 89fc4fbfe2ca9994ffa64185c6cc48225ca0204c

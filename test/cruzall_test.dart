@@ -22,12 +22,13 @@ import 'package:cruzall/wallet.dart';
 
 void main() async {
   CruzawlPreferences preferences = CruzawlPreferences(
-      await databaseFactoryMemoryFs.openDatabase('settings.db'), testing: true);
+      await databaseFactoryMemoryFs.openDatabase('settings.db'),
+      testing: true);
   await preferences.load();
   preferences.networkEnabled = false;
   preferences.minimumReserveAddress = 3;
-  Cruzawl appState =
-      Cruzawl(databaseFactoryMemoryFs, preferences, Directory(''));
+  Cruzawl appState = Cruzawl((BuildContext c, String x) {},
+      databaseFactoryMemoryFs, preferences, Directory(''));
 
   testWidgets('CruzallApp Init', (WidgetTester tester) async {
     expect(appState.wallets.length, 0);
@@ -37,7 +38,8 @@ void main() async {
     await tester.pump(Duration(seconds: 1));
     await tester.pump(Duration(seconds: 2));
     expect(appState.wallets.length, 1);
-    expect(appState.wallet.wallet.addresses.length, preferences.minimumReserveAddress);
+    expect(appState.wallet.wallet.addresses.length,
+        preferences.minimumReserveAddress);
   });
 
   testWidgets('WalletWidget Verify', (WidgetTester tester) async {
@@ -47,10 +49,11 @@ void main() async {
         child: MaterialApp(
             home: SimpleScaffold(WalletWidget(wallet), title: wallet.name))));
     await tester.drag(find.text('Addresses'), Offset(0.0, -400));
-    await tester.pump(); 
+    await tester.pump();
     await tester.tap(find.widgetWithText(RaisedGradientButton, 'Verify'));
     await tester.pump(Duration(seconds: 1));
     await tester.pump(Duration(seconds: 2));
-    expect(find.text('Verified 3/3 addresses and 11/11 tests succeeded'), findsOneWidget);
+    expect(find.text('Verified 3/3 addresses and 11/11 tests succeeded'),
+        findsOneWidget);
   });
 }

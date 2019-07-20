@@ -16,17 +16,18 @@ import 'package:cruzall/wallet.dart';
 class WalletBalanceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Wallet wallet =
         ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
     final Currency currency = wallet.currency;
     final int numTransactions = wallet.transactions.data.length;
     final bool hasPeer =
         currency.network != null ? currency.network.hasPeer : false;
-    final ThemeData theme = Theme.of(context);
     final TextStyle labelStyle =
         TextStyle(fontFamily: 'MartelSans', color: Colors.grey);
     final TextStyle linkStyle = TextStyle(
-      color: theme.accentColor,
+      color: appState.theme.linkColor,
     );
 
     final List<Widget> ret = <Widget>[
@@ -55,7 +56,7 @@ class WalletBalanceWidget extends StatelessWidget {
         padding: EdgeInsets.only(bottom: 32),
         child: Text(
           currency.format(wallet.balance),
-          style: Theme.of(context).textTheme.display1,
+          style: theme.textTheme.display1,
         ),
       ),
     ];
@@ -69,7 +70,7 @@ class WalletBalanceWidget extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 32),
           child: Text(
             currency.format(wallet.maturesBalance),
-            style: Theme.of(context).textTheme.display1,
+            style: theme.textTheme.display1,
           ),
         ),
       );

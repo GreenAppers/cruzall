@@ -22,7 +22,7 @@ class WalletReceiveWidget extends StatefulWidget {
 class _WalletReceiveWidgetState extends State<WalletReceiveWidget> {
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Wallet wallet =
         ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
     final Address address = wallet.getNextAddress();
@@ -52,6 +52,7 @@ class _WalletReceiveWidgetState extends State<WalletReceiveWidget> {
             ),
             CopyableText(
               addressText,
+              appState.setClipboardText,
               onTap: () =>
                   Navigator.of(context).pushNamed('/address/${addressText}'),
             ),
@@ -60,12 +61,12 @@ class _WalletReceiveWidgetState extends State<WalletReceiveWidget> {
               child: FlatButton.icon(
                 icon: Icon(
                   Icons.refresh,
-                  color: theme.accentColor,
+                  color: appState.theme.linkColor,
                 ),
                 label: Text(
                   'Generate new address',
                   style: TextStyle(
-                    color: theme.accentColor,
+                    color: appState.theme.linkColor,
                   ),
                 ),
                 onPressed: () => setState(() =>

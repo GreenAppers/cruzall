@@ -121,8 +121,8 @@ class _CruzallWidgetState extends State<CruzallWidget> {
 
   Widget buildWalletsMenu(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
     final PopupMenuBuilder walletsMenu = PopupMenuBuilder();
+
     for (WalletModel x in widget.appState.wallets) {
       bool activeWallet = x.wallet.name == widget.wallet.name;
       walletsMenu.addItem(

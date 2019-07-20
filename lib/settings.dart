@@ -28,6 +28,10 @@ class _CruzallSettingsState extends State<CruzallSettings> {
     return ListView(
       padding: EdgeInsets.only(top: 20),
       children: <Widget>[
+        Container(
+          height: 200,
+          child: Image.asset('assets/cruzbit.png'),
+        ),
         ListTile(
           leading: Container(
               padding: EdgeInsets.all(10),
@@ -44,7 +48,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
             value: appState.preferences.theme,
             onChanged: (String val) {
               appState.preferences.theme = val;
-              appState.setState(() {});
+              appState.setState(() => appState.setTheme());
             },
             items: buildDropdownMenuItem(themes.keys.toList()),
           ),

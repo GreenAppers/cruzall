@@ -59,7 +59,7 @@ class WalletWidget extends StatelessWidget {
       ),
       HideableWidget(
         title: 'Seed phrase',
-        child: CopyableText(wallet.seedPhrase),
+        child: CopyableText(wallet.seedPhrase, appState.setClipboardText),
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -132,7 +132,7 @@ class WalletWidget extends StatelessWidget {
           String publicKeyList = '';
           for (Address address in addresses)
             publicKeyList += '${address.publicKey.toJson()}\n';
-          CopyableText.setClipboardText(context, publicKeyList);
+          appState.setClipboardText(context, publicKeyList);
           Scaffold.of(context).showSnackBar(SnackBar(content: Text('Copied.')));
         },
       ),

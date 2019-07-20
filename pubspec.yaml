@@ -1,12 +1,13 @@
 name: cruzall
 description: The original cruzbit wallet.
 
-version: 1.0.9+9
+version: 1.0.10+10
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  barcode_scan: ^1.0.0
   charts_flutter: ^0.6.0
   cruzawl:
     path: ./cruzawl
