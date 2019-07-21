@@ -95,6 +95,8 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                         validator: (value) {
                           Address fromAddress = wallet.addresses[value];
                           if (fromAddress == null) return 'Unknown address';
+                          if (fromAddress.privateKey == null)
+                            return 'Watch-Only Wallet';
                           return null;
                         },
                         onSaved: (value) => fromInput = value,
@@ -174,8 +176,12 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                         if (!(v > 0)) return "Value must be positive";
                         Address fromAddress =
                             wallet.addresses[fromController.text];
-                        if (fromAddress != null && v > fromAddress.balance)
-                          return 'Insufficient funds';
+                        if (fromAddress != null) {
+                          if (fromAddress.privateKey == null)
+                            return 'Watch-Only Wallet';
+                          if (v > fromAddress.balance)
+                            return 'Insufficient funds';
+                        }
                         if (currency.network.minAmount == null)
                           return 'Network offline';
                         if (v < currency.network.minAmount)
@@ -194,6 +200,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                       child: Text('Fee', style: labelTextStyle),
                     ),
                     TextFormField(
+                      initialValue: currency.suggestedFee(null),
                       textAlign: TextAlign.right,
                       keyboardType:
                           TextInputType.numberWithOptions(decimal: true),

@@ -57,10 +57,17 @@ class WalletWidget extends StatelessWidget {
         title: Text('Maturing transactions', style: labelTextStyle),
         trailing: Text(wallet.maturing.length.toString()),
       ),
-      HideableWidget(
-        title: 'Seed phrase',
-        child: CopyableText(wallet.seedPhrase, appState.setClipboardText),
-      ),
+    ];
+
+    if (wallet.hdWallet)
+      header.add(
+        HideableWidget(
+          title: 'Seed phrase',
+          child: CopyableText(wallet.seedPhrase, appState.setClipboardText),
+        ),
+      );
+
+    header.add(
       Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -84,7 +91,7 @@ class WalletWidget extends StatelessWidget {
           ),
         ],
       ),
-    ];
+    );
 
     List<Widget> footer = <Widget>[
       RaisedGradientButton(
@@ -219,8 +226,9 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
   final TextEditingController seedPhraseController =
       TextEditingController(text: generateMnemonic());
   String name = 'My wallet', seedPhrase = '', currency = 'CRUZ';
+  bool hdWallet = true, watchOnlyWallet = false;
   List<PrivateKey> keyList;
-  bool hdWallet = true;
+  List<PublicAddress> publicKeyList;
 
   @override
   void dispose() {
@@ -230,144 +238,209 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
 
   @override
   Widget build(BuildContext c) {
-    return Form(
-      key: formKey,
-      child: ListView(children: <Widget>[
-        ListTile(
-          subtitle: TextFormField(
-            enabled: false,
-            initialValue: currency,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Currency',
-            ),
-            validator: (value) {
-              if (Currency.fromJson(value) == null) return 'Unknown address';
-              return null;
-            },
-            onSaved: (value) => currency = value,
+    List<Widget> ret = <Widget>[];
+
+    ret.add(
+      ListTile(
+        subtitle: TextFormField(
+          enabled: false,
+          initialValue: currency,
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+            labelText: 'Currency',
           ),
-        ),
-        ListTile(
-          subtitle: TextFormField(
-            autofocus: true,
-            keyboardType: TextInputType.emailAddress,
-            initialValue: name,
-            decoration: InputDecoration(
-              labelText: 'Name',
-            ),
-            validator: (value) {
-              if (widget.appState.wallets
-                      .indexWhere((v) => v.wallet.name == value) !=
-                  -1) return 'Name must be unique.';
-              return null;
-            },
-            onSaved: (val) => name = val,
-          ),
-        ),
-        SwitchListTile(
-          title: Text('HD Wallet'),
-          value: hdWallet,
-          onChanged: (bool value) => setState(() => hdWallet = value),
-        ),
-        hdWallet
-            ? ListTile(
-                subtitle: TextFormField(
-                  maxLines: 3,
-                  controller: seedPhraseController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Seed phrase',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.refresh),
-                      onPressed: () =>
-                          seedPhraseController.text = generateMnemonic(),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (!validateMnemonic(value)) return 'Invalid mnemonic.';
-                    return null;
-                  },
-                  onSaved: (val) => seedPhrase = val,
-                ),
-              )
-            : ListTile(
-                subtitle: TextFormField(
-                    maxLines: 10,
-                    controller: keyListController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Private Key List',
-                    ),
-                    validator: (value) {
-                      Currency cur = Currency.fromJson(currency);
-                      if (cur == null) return 'Invalid currency';
-                      try {
-                        List<PrivateKey> keys = value
-                            .split('\\s+')
-                            .map((key) => cur.fromPrivateKeyJson(key))
-                            .toList();
-                        if (keys.length <= 0) return 'No private keys';
-                        for (PrivateKey key in keys)
-                          if (!cur.fromPrivateKey(key).verify())
-                            return 'verify failed: ${key.toJson()}';
-                      } catch (error) {
-                        return '$error';
-                      }
-                    },
-                    onSaved: (value) {
-                      Currency cur = Currency.fromJson(currency);
-                      keyList = cur == null
-                          ? null
-                          : value
-                              .split('\\s+')
-                              .map((key) => cur.fromPrivateKeyJson(key))
-                              .toList();
-                    })),
-        RaisedGradientButton(
-          labelText: 'Create',
-          padding: EdgeInsets.all(32),
-          onPressed: () async {
-            if (!formKey.currentState.validate()) return;
-            formKey.currentState.save();
-            FocusScope.of(context).requestFocus(FocusNode());
-            Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text('Creating... (PBKDF: 2048 iterations)')));
-            widget.appState.setState(() => widget.appState.walletsLoading++);
-            await Future.delayed(Duration(seconds: 1));
-
-            if (widget.appState.preferences.unitTestBeforeCreating &&
-                widget.appState.runUnitTests() < 0) return;
-
-            if (hdWallet) {
-              widget.appState.addWallet(Wallet.fromSeedPhrase(
-                  widget.appState.databaseFactory,
-                  widget.appState.getWalletFilename(name),
-                  name,
-                  Currency.fromJson(currency),
-                  seedPhrase,
-                  widget.appState.preferences,
-                  debugPrint,
-                  widget.appState.openedWallet));
-            } else {
-              widget.appState.addWallet(Wallet.fromPrivateKeyList(
-                  widget.appState.databaseFactory,
-                  widget.appState.getWalletFilename(name),
-                  name,
-                  Currency.fromJson(currency),
-                  Seed(randBytes(64)),
-                  keyList,
-                  widget.appState.preferences,
-                  debugPrint,
-                  widget.appState.openedWallet));
-            }
-
-            widget.appState.setState(() => widget.appState.walletsLoading--);
-            if (!widget.welcome) Navigator.of(context).pop();
+          validator: (value) {
+            if (Currency.fromJson(value) == null) return 'Unknown address';
+            return null;
           },
+          onSaved: (value) => currency = value,
         ),
-      ]),
+      ),
     );
+
+    ret.add(
+      ListTile(
+        subtitle: TextFormField(
+          autofocus: true,
+          keyboardType: TextInputType.emailAddress,
+          initialValue: name,
+          decoration: InputDecoration(
+            labelText: 'Name',
+          ),
+          validator: (value) {
+            if (widget.appState.wallets
+                    .indexWhere((v) => v.wallet.name == value) !=
+                -1) return 'Name must be unique.';
+            return null;
+          },
+          onSaved: (val) => name = val,
+        ),
+      ),
+    );
+
+    ret.add(SwitchListTile(
+      title: Text('HD Wallet'),
+      value: hdWallet,
+      onChanged: (bool value) => setState(() => hdWallet = value),
+    ));
+
+    if (!hdWallet)
+      ret.add(
+        SwitchListTile(
+          title: Text('Watch-Only Wallet'),
+          value: watchOnlyWallet,
+          onChanged: (bool value) => setState(() => watchOnlyWallet = value),
+        ),
+      );
+
+    if (hdWallet)
+      ret.add(ListTile(
+        subtitle: TextFormField(
+          maxLines: 3,
+          controller: seedPhraseController,
+          keyboardType: TextInputType.multiline,
+          decoration: InputDecoration(
+            labelText: 'Seed phrase',
+            suffixIcon: IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () => seedPhraseController.text = generateMnemonic(),
+            ),
+          ),
+          validator: (value) {
+            if (!validateMnemonic(value)) return 'Invalid mnemonic.';
+            return null;
+          },
+          onSaved: (val) => seedPhrase = val,
+        ),
+      ));
+    else if (watchOnlyWallet)
+      ret.add(
+        ListTile(
+            subtitle: TextFormField(
+                maxLines: 10,
+                controller: keyListController,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  labelText: 'Public Key List',
+                ),
+                validator: (value) {
+                  Currency cur = Currency.fromJson(currency);
+                  if (cur == null) return 'Invalid currency';
+                  try {
+                    List<PublicAddress> keys = value
+                        .split('\\s+')
+                        .map((key) => cur.fromPublicAddressJson(key))
+                        .toList();
+                    if (keys.length <= 0) return 'No public keys';
+                  } catch (error) {
+                    return '$error';
+                  }
+                },
+                onSaved: (value) {
+                  Currency cur = Currency.fromJson(currency);
+                  publicKeyList = cur == null
+                      ? null
+                      : value
+                          .split('\\s+')
+                          .map((key) => cur.fromPublicAddressJson(key))
+                          .toList();
+                })),
+      );
+    else
+      ret.add(
+        ListTile(
+            subtitle: TextFormField(
+                maxLines: 10,
+                controller: keyListController,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  labelText: 'Private Key List',
+                ),
+                validator: (value) {
+                  Currency cur = Currency.fromJson(currency);
+                  if (cur == null) return 'Invalid currency';
+                  try {
+                    List<PrivateKey> keys = value
+                        .split('\\s+')
+                        .map((key) => cur.fromPrivateKeyJson(key))
+                        .toList();
+                    if (keys.length <= 0) return 'No private keys';
+                    for (PrivateKey key in keys)
+                      if (!cur.fromPrivateKey(key).verify())
+                        return 'verify failed: ${key.toJson()}';
+                  } catch (error) {
+                    return '$error';
+                  }
+                },
+                onSaved: (value) {
+                  Currency cur = Currency.fromJson(currency);
+                  keyList = cur == null
+                      ? null
+                      : value
+                          .split('\\s+')
+                          .map((key) => cur.fromPrivateKeyJson(key))
+                          .toList();
+                })),
+      );
+
+    ret.add(
+      RaisedGradientButton(
+        labelText: 'Create',
+        padding: EdgeInsets.all(32),
+        onPressed: () async {
+          if (!formKey.currentState.validate()) return;
+          formKey.currentState.save();
+          FocusScope.of(context).requestFocus(FocusNode());
+          String explanation = hdWallet ? ' (PBKDF: 2048 iterations)' : '';
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text('Creating... $explanation')));
+          widget.appState.setState(() => widget.appState.walletsLoading++);
+          await Future.delayed(Duration(seconds: 1));
+
+          if (widget.appState.preferences.unitTestBeforeCreating &&
+              widget.appState.runUnitTests() < 0) return;
+
+          if (hdWallet) {
+            widget.appState.addWallet(Wallet.fromSeedPhrase(
+                widget.appState.databaseFactory,
+                widget.appState.getWalletFilename(name),
+                name,
+                Currency.fromJson(currency),
+                seedPhrase,
+                widget.appState.preferences,
+                debugPrint,
+                widget.appState.openedWallet));
+          } else if (watchOnlyWallet) {
+            widget.appState.addWallet(Wallet.fromPublicKeyList(
+                widget.appState.databaseFactory,
+                widget.appState.getWalletFilename(name),
+                name,
+                Currency.fromJson(currency),
+                Seed(randBytes(64)),
+                publicKeyList,
+                widget.appState.preferences,
+                debugPrint,
+                widget.appState.openedWallet));
+          } else {
+            widget.appState.addWallet(Wallet.fromPrivateKeyList(
+                widget.appState.databaseFactory,
+                widget.appState.getWalletFilename(name),
+                name,
+                Currency.fromJson(currency),
+                Seed(randBytes(64)),
+                keyList,
+                widget.appState.preferences,
+                debugPrint,
+                widget.appState.openedWallet));
+          }
+
+          widget.appState.setState(() => widget.appState.walletsLoading--);
+          if (!widget.welcome) Navigator.of(context).pop();
+        },
+      ),
+    );
+
+    return Form(key: formKey, child: ListView(children: ret));
   }
 }
 

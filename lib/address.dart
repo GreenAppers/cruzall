@@ -83,13 +83,14 @@ class _AddressWidgetState extends State<AddressWidget> {
             CopyableText(address.chainCode.toJson(), appState.setClipboardText),
       ));
 
-    top.add(
-      HideableWidget(
-        title: 'Private Key',
-        child: CopyableText(
-            address.privateKey.toJson(), appState.setClipboardText),
-      ),
-    );
+    if (address.privateKey != null)
+      top.add(
+        HideableWidget(
+          title: 'Private Key',
+          child: CopyableText(
+              address.privateKey.toJson(), appState.setClipboardText),
+        ),
+      );
 
     header = <Widget>[
       Container(
