@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,16 +38,28 @@ void setClipboardText(BuildContext context, String text) {
 }
 
 void main() async {
-  bool isTrustFall = await TrustFall.isTrustFall;
-  packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
-  Directory dataDir = await getApplicationDocumentsDirectory();
+  bool mobile;
+  try {
+    mobile = defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
+  } catch (e) {
+    mobile = false;
+    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  }
+  bool isTrustFall = !mobile || await TrustFall.isTrustFall;
+  packageinfo.PackageInfo info =
+      mobile ? await packageinfo.PackageInfo.fromPlatform() : null;
+  Directory dataDir =
+      mobile ? await getApplicationDocumentsDirectory() : Directory('.');
   debugPrint('main trustFall=${isTrustFall}, dataDir=${dataDir.path}');
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
   Cruzawl appState = Cruzawl(
       setClipboardText, databaseFactoryIo, await preferences.load(), dataDir,
-      packageInfo: PackageInfo(
-          info.appName, info.packageName, info.version, info.buildNumber),
+      packageInfo: info != null
+          ? PackageInfo(
+              info.appName, info.packageName, info.version, info.buildNumber)
+          : PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.0.12', '12'),
       isTrustFall: isTrustFall);
   runApp(ScopedModel(
     model: appState,
@@ -62,10 +75,17 @@ class CruzallApp extends StatefulWidget {
   CruzallAppState createState() => CruzallAppState();
 }
 
-class CruzallAppState extends State<CruzallApp> {
+class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     widget.appState.runQuickTestVector();
 
     if (!widget.appState.preferences.walletsEncrypted)
@@ -225,5 +245,17 @@ class CruzallAppState extends State<CruzallApp> {
 
           return null;
         });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    debugPrint('didChangeAppLifecycleState $state');
+    if (state == AppLifecycleState.paused) {
+      // went to Background
+    }
+    if (state == AppLifecycleState.resumed) {
+      // came back to Foreground
+    }
   }
 }
