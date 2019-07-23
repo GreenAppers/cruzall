@@ -15,4 +15,4 @@ cp -R $1/example/macos .
 cp -R $1/example/linux .
 cp -R $1/example/windows .
 cp desktop/pubspec.* .
-
+cp desktop/main.dart lib/main.dart

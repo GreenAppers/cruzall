@@ -7,7 +7,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.36.4"
+    version: "0.37.0"
   args:
     dependency: transitive
     description:
@@ -21,7 +21,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   barcode_scan:
     dependency: "direct main"
     description:
@@ -63,7 +63,7 @@ packages:
       name: build_daemon
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "2.0.0"
   build_resolvers:
     dependency: transitive
     description:
@@ -77,7 +77,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.1"
+    version: "1.6.2"
   build_runner_core:
     dependency: transitive
     description:
@@ -201,7 +201,7 @@ packages:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.19"
+    version: "0.1.20"
   glob:
     dependency: transitive
     description:
@@ -292,14 +292,14 @@ packages:
       name: json_serializable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.1.0"
   kernel:
     dependency: transitive
     description:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.19"
+    version: "0.3.20"
   logging:
     dependency: transitive
     description:
@@ -320,7 +320,7 @@ packages:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.6"
+    version: "1.1.7"
   mime:
     dependency: transitive
     description:
@@ -408,9 +408,11 @@ packages:
   qr_flutter:
     dependency: "direct main"
     description:
-      name: qr_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "8555e7c08762cec5c048c5caa2b2faa1b1887023"
+      url: "git://github.com/lukef/qr.flutter.git"
+    source: git
     version: "2.1.0+55"
   quiver:
     dependency: transitive
@@ -432,7 +434,7 @@ packages:
       name: sembast
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.17.0"
+    version: "1.17.2+2"
   shelf:
     dependency: transitive
     description:
@@ -458,7 +460,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.4+2"
+    version: "0.9.4+3"
   source_span:
     dependency: transitive
     description:

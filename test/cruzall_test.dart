@@ -15,9 +15,9 @@ import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/test.dart';
 import 'package:cruzawl/wallet.dart';
 
+import 'package:cruzall/app.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/main.dart';
 import 'package:cruzall/wallet.dart';
 
 void main() async {
