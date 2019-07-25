@@ -60,6 +60,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         return MaterialApp(
           title: 'cruzall',
           theme: appState.theme.data,
+          debugShowCheckedModeBanner: false,
           home: SimpleScaffold(ErrorWidget.builder(appState.fatal),
               title: 'Cruzall'),
         );
@@ -68,6 +69,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         return MaterialApp(
           title: 'cruzall',
           theme: appState.theme.data,
+          debugShowCheckedModeBanner: false,
           home: SimpleScaffold(
             UnlockCruzallWidget(),
             title: 'Unlock Cruzall',
@@ -77,6 +79,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
       return MaterialApp(
         title: 'cruzall',
         theme: appState.theme.data,
+        debugShowCheckedModeBanner: false,
         home: SimpleScaffold(
           Column(
             children: <Widget>[
@@ -96,9 +99,9 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
 
     final Wallet wallet = appState.wallet.wallet;
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
         title: 'cruzall',
         theme: appState.theme.data,
+        debugShowCheckedModeBanner: false,
         home: ScopedModel(
           model: appState.wallet,
           child: CruzallWidget(wallet, appState),
