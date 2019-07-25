@@ -18,7 +18,11 @@ import 'package:cruzall/cruzawl-ui/model.dart';
 
 void main() async {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-  Directory dataDir = Directory(Platform.environment['HOME'] + '/.cruzall');
+  String homePath = Platform.environment['HOME'], dataDirPath = '';
+  String appDataPath = Platform.environment['LOCALAPPDATA'];
+  if (homePath != null && homePath.length > 0) dataDirPath = homePath + '/.cruzall';
+  else if (appDataPath != null && appDataPath.length > 0) dataDirPath = appDataPath + '\\Cruzall';
+  Directory dataDir = Directory(dataDirPath);
   PackageInfo info =
       PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.0.13', '13');
   debugPrint('main dataDir=${dataDir.path}');
