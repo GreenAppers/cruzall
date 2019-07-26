@@ -25,9 +25,8 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         appState.preferences.unitTestBeforeCreating;
     final bool verifyAddressEveryLoad =
         appState.preferences.verifyAddressEveryLoad;
-    final TextStyle labelStyle = TextStyle(
-      fontFamily: 'MartelSans',
-      color: Colors.grey);
+    final TextStyle labelStyle =
+        TextStyle(fontFamily: 'MartelSans', color: Colors.grey);
 
     final List<Widget> ret = <Widget>[
       Container(
@@ -36,8 +35,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ),
       ListTile(
         leading: Container(
-            padding: EdgeInsets.all(10),
-            child: Image.asset('assets/icon.png')),
+            padding: EdgeInsets.all(10), child: Image.asset('assets/icon.png')),
         title: Text('Version'),
         trailing: Text(appState.packageInfo == null
             ? 'Unknown'
@@ -56,8 +54,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         ),
       ),
       ListTile(
-        leading:
-            Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
+        leading: Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
         title: Text('Encryption'),
         trailing: Switch(
           value: encryptionEnabled,
@@ -79,8 +76,8 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         ),
       ),
       ListTile(
-        leading: Icon(
-            verifyAddressEveryLoad ? Icons.lock_outline : Icons.lock_open),
+        leading:
+            Icon(verifyAddressEveryLoad ? Icons.lock_outline : Icons.lock_open),
         title: Text('Verify key pairs every load'),
         trailing: Switch(
           value: verifyAddressEveryLoad,
@@ -89,8 +86,8 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         ),
       ),
       ListTile(
-        leading: Icon(
-            unitTestBeforeCreating ? Icons.lock_outline : Icons.lock_open),
+        leading:
+            Icon(unitTestBeforeCreating ? Icons.lock_outline : Icons.lock_open),
         title: Text('Unit test before creating wallets'),
         trailing: Switch(
           value: unitTestBeforeCreating,
@@ -123,26 +120,23 @@ class _CruzallSettingsState extends State<CruzallSettings> {
     if (appState.preferences.debugLog && appState.debugLog != null) {
       ret.add(
         Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text('Debug Log ', style: labelStyle),
-              IconButton(
-                icon: Icon(Icons.content_copy),
-                color: appState.theme.linkColor,
-                onPressed: () => appState.setClipboardText(context, appState.debugLog),
-              ),
-            ]),
+          child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            Text('Debug Log ', style: labelStyle),
+            IconButton(
+              icon: Icon(Icons.content_copy),
+              color: appState.theme.linkColor,
+              onPressed: () =>
+                  appState.setClipboardText(context, appState.debugLog),
+            ),
+          ]),
         ),
       );
 
       ret.add(
         Container(
-          height: 600,
-          padding: EdgeInsets.only(left: 32, right: 32),
-          child: SingleChildScrollView(
-            child: Text(appState.debugLog))
-          ),
+            height: 600,
+            padding: EdgeInsets.only(left: 32, right: 32),
+            child: SingleChildScrollView(child: Text(appState.debugLog))),
       );
     }
 

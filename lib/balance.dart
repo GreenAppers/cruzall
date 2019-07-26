@@ -9,6 +9,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
+import 'package:cruzall/cruzawl-ui/localizations.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/wallet.dart';
@@ -17,6 +18,7 @@ class WalletBalanceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppLocalizations locale = AppLocalizations.of(context);
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Wallet wallet =
         ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
@@ -35,20 +37,19 @@ class WalletBalanceWidget extends StatelessWidget {
         padding: EdgeInsets.only(top: 32),
         child: RichText(
           text: !hasPeer
-              ? TextSpan(text: 'Your current balance is:', style: labelStyle)
-              : TextSpan(
+              ? TextSpan(text: locale.currentBalance, style: labelStyle)
+              : AppLocalizations.parseTextSpan(
+                  locale.balanceAtHeight(currency.network.tipHeight),
                   style: labelStyle,
-                  text: 'Your balance at block height ',
-                  children: <TextSpan>[
-                    TextSpan(
+                  tags: <String, TextSpan>{
+                    'a': TextSpan(
                       style: linkStyle,
                       text: '${currency.network.tipHeight}',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () => Navigator.of(context)
                             .pushNamed('/height/${currency.network.tipHeight}'),
                     ),
-                    TextSpan(text: ' is:'),
-                  ],
+                  },
                 ),
         ),
       ),
@@ -62,8 +63,7 @@ class WalletBalanceWidget extends StatelessWidget {
     ];
 
     if (wallet.maturesBalance > 0) {
-      ret.add(Text(
-          'Your balance maturing by height ${wallet.maturesHeight} is:',
+      ret.add(Text(locale.balanceMaturingByHeight(wallet.maturesHeight),
           style: labelStyle));
       ret.add(
         Container(
@@ -77,13 +77,7 @@ class WalletBalanceWidget extends StatelessWidget {
     }
 
     if (numTransactions > 0) {
-      ret.add(
-        Text(
-          'Recent History',
-          style: labelStyle,
-        ),
-      );
-
+      ret.add(Text(locale.recentHistory, style: labelStyle));
       ret.add(
         Expanded(
           child: ListView.builder(

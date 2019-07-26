@@ -19,40 +19,23 @@ import 'package:cruzall/app.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 
 void main() async {
-  bool isMobile;
-  SetClipboardText setClipboardText;
-  try {
-    isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
-  } catch (e) {
-    isMobile = false;
-    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-  }
-  if (isMobile) {
-    setClipboardText = (BuildContext context, String text) {
+  bool isTrustFall = await TrustFall.isTrustFall;
+  packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
+  Directory dataDir = await getApplicationDocumentsDirectory();
+  debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
+
+  SetClipboardText setClipboardText = (BuildContext context, String text) =>
       Clipboard.setData(ClipboardData(text: text)).then((result) =>
           Scaffold.of(context)
               .showSnackBar(SnackBar(content: Text('Copied.'))));
-    };
-  } else {
-  }
-
-  bool isTrustFall = isMobile && await TrustFall.isTrustFall;
-  packageinfo.PackageInfo info =
-      isMobile ? await packageinfo.PackageInfo.fromPlatform() : null;
-  Directory dataDir = isMobile
-      ? await getApplicationDocumentsDirectory()
-      : Directory(Platform.environment['HOME'] + '/.cruzall');
-  debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
   Cruzawl appState = Cruzawl(
       setClipboardText, databaseFactoryIo, await preferences.load(), dataDir,
-      packageInfo: info != null
-          ? PackageInfo(
-              info.appName, info.packageName, info.version, info.buildNumber)
-          : PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.0.13', '13'),
+      packageInfo: PackageInfo(
+          info.appName, info.packageName, info.version, info.buildNumber),
       isTrustFall: isTrustFall);
+
   runApp(ScopedModel(
     model: appState,
     child: CruzallApp(appState),

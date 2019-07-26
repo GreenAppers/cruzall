@@ -4,6 +4,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:cruzawl/currency.dart';
@@ -14,6 +15,7 @@ import 'package:cruzall/cruzall.dart';
 import 'package:cruzall/cruzawl-ui/address.dart';
 import 'package:cruzall/cruzawl-ui/block.dart';
 import 'package:cruzall/cruzawl-ui/cruzbase.dart';
+import 'package:cruzall/cruzawl-ui/localizations.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/network.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
@@ -54,22 +56,34 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final Cruzawl appState =
         ScopedModel.of<Cruzawl>(context, rebuildOnChange: true);
+    final localizationsDelegates = <LocalizationsDelegate>[
+      AppLocalizationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ];
+    final supportedLocales = <Locale>[Locale("en"), Locale("zh")];
 
     if (appState.wallets.length == 0) {
       if (appState.fatal != null)
         return MaterialApp(
-          title: 'cruzall',
           theme: appState.theme.data,
           debugShowCheckedModeBanner: false,
+          supportedLocales: supportedLocales,
+          localizationsDelegates: localizationsDelegates,
+          onGenerateTitle: (BuildContext context) =>
+              AppLocalizations.of(context).title,
           home: SimpleScaffold(ErrorWidget.builder(appState.fatal),
               title: 'Cruzall'),
         );
 
       if (appState.preferences.walletsEncrypted)
         return MaterialApp(
-          title: 'cruzall',
           theme: appState.theme.data,
           debugShowCheckedModeBanner: false,
+          supportedLocales: supportedLocales,
+          localizationsDelegates: localizationsDelegates,
+          onGenerateTitle: (BuildContext context) =>
+              AppLocalizations.of(context).title,
           home: SimpleScaffold(
             UnlockCruzallWidget(),
             title: 'Unlock Cruzall',
@@ -77,9 +91,12 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         );
 
       return MaterialApp(
-        title: 'cruzall',
         theme: appState.theme.data,
         debugShowCheckedModeBanner: false,
+        supportedLocales: supportedLocales,
+        localizationsDelegates: localizationsDelegates,
+        onGenerateTitle: (BuildContext context) =>
+            AppLocalizations.of(context).title,
         home: SimpleScaffold(
           Column(
             children: <Widget>[
@@ -99,9 +116,12 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
 
     final Wallet wallet = appState.wallet.wallet;
     return MaterialApp(
-        title: 'cruzall',
         theme: appState.theme.data,
         debugShowCheckedModeBanner: false,
+        supportedLocales: supportedLocales,
+        localizationsDelegates: localizationsDelegates,
+        onGenerateTitle: (BuildContext context) =>
+            AppLocalizations.of(context).title,
         home: ScopedModel(
           model: appState.wallet,
           child: CruzallWidget(wallet, appState),
