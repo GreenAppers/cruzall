@@ -12,6 +12,7 @@ import 'package:cruzawl/network.dart';
 import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/address.dart';
+import 'package:cruzall/cruzawl-ui/localizations.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 
@@ -28,7 +29,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
   final amountKey = GlobalKey<FormFieldState>();
   final TextEditingController fromController = TextEditingController();
   final TextEditingController toController = TextEditingController();
-  String fromInput, toInput, memoInput, barcode;
+  String fromInput, toInput, memoInput;
   num amountInput, feeInput;
   Wallet lastWallet;
 
@@ -41,10 +42,12 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations locale = AppLocalizations.of(context);
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
+    final TextStyle labelTextStyle = appState.theme.titleStyle;
     final Wallet wallet =
         ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
     final Currency currency = wallet.currency;
-    final TextStyle labelTextStyle = TextStyle(fontFamily: 'MartelSans');
 
     if (lastWallet == null || lastWallet != wallet) {
       lastWallet = wallet;
@@ -80,7 +83,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                       onTap: chooseAddress,
                       child: Padding(
                         padding: const EdgeInsets.all(32.0),
-                        child: Text('From', style: labelTextStyle),
+                        child: Text(locale.from, style: labelTextStyle),
                       ),
                     ),
                     GestureDetector(
@@ -94,9 +97,9 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                         keyboardType: TextInputType.multiline,
                         validator: (value) {
                           Address fromAddress = wallet.addresses[value];
-                          if (fromAddress == null) return 'Unknown address';
+                          if (fromAddress == null) return locale.unknownAddress;
                           if (fromAddress.privateKey == null)
-                            return 'Watch-Only Wallet';
+                            return locale.watchOnlyWallet;
                           return null;
                         },
                         onSaved: (value) => fromInput = value,
@@ -109,7 +112,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                     const Icon(Icons.send),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
-                      child: Text('Pay to', style: labelTextStyle),
+                      child: Text(locale.payTo, style: labelTextStyle),
                     ),
                     TextFormField(
                       maxLines: null,
@@ -125,7 +128,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                       ),
                       validator: (value) {
                         if (currency.fromPublicAddressJson(value) == null)
-                          return 'Invalid address';
+                          return locale.invalidAddress;
                         return null;
                       },
                       onSaved: (value) => toInput = value,
@@ -137,7 +140,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                     const Icon(Icons.edit),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
-                      child: Text('Memo', style: labelTextStyle),
+                      child: Text(locale.memo, style: labelTextStyle),
                     ),
                     TextFormField(
                       maxLines: null,
@@ -147,8 +150,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                         hintText: '',
                       ),
                       validator: (value) {
-                        if (value.length > 100)
-                          return 'Maximum memo length is 100';
+                        if (value.length > 100) return locale.maxMemoLength;
                         return null;
                       },
                       onSaved: (value) => memoInput = value,
@@ -160,7 +162,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                     const Icon(Icons.attach_money),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
-                      child: Text('Amount', style: labelTextStyle),
+                      child: Text(locale.amount, style: labelTextStyle),
                     ),
                     TextFormField(
                       key: amountKey,
@@ -173,19 +175,19 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                       ),
                       validator: (value) {
                         num v = currency.parse(value);
-                        if (!(v > 0)) return "Value must be positive";
+                        if (!(v > 0)) return locale.valueMustBePositive;
                         Address fromAddress =
                             wallet.addresses[fromController.text];
                         if (fromAddress != null) {
                           if (fromAddress.privateKey == null)
-                            return 'Watch-Only Wallet';
+                            return locale.watchOnlyWallet;
                           if (v > fromAddress.balance)
-                            return 'Insufficient funds';
+                            return locale.insufficientFunds;
                         }
                         if (currency.network.minAmount == null)
-                          return 'Network offline';
+                          return locale.networkOffline;
                         if (v < currency.network.minAmount)
-                          return 'Minimum amount is ${currency.network.minAmount}';
+                          return locale.minAmount(currency.network.minAmount);
                         return null;
                       },
                       onSaved: (value) => amountInput = currency.parse(value),
@@ -197,7 +199,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                     const Icon(Icons.rowing),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
-                      child: Text('Fee', style: labelTextStyle),
+                      child: Text(locale.fee, style: labelTextStyle),
                     ),
                     TextFormField(
                       initialValue: currency.suggestedFee(null),
@@ -210,20 +212,20 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                       ),
                       validator: (value) {
                         num v = currency.parse(value);
-                        if (!(v > 0)) return "Value must be positive";
+                        if (!(v > 0)) return locale.valueMustBePositive;
                         num amount =
                             currency.parse(amountKey.currentState.value);
                         Address fromAddress =
                             wallet.addresses[fromController.text];
                         if (fromAddress != null &&
                             (amount + v) > fromAddress.balance)
-                          return 'Insufficient funds';
+                          return locale.insufficientFunds;
                         if (currency.network.tipHeight == null ||
                             currency.network.tipHeight == 0 ||
                             currency.network.minFee == null)
-                          return 'Network offline';
+                          return locale.networkOffline;
                         if (v < currency.network.minFee)
-                          return 'Minimum fee is ${currency.network.minFee}';
+                          return locale.minFee(currency.network.minFee);
                         return null;
                       },
                       onSaved: (value) => feeInput = currency.parse(value),
@@ -234,14 +236,14 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
             ),
           ),
           RaisedGradientButton(
-            labelText: 'Send',
+            labelText: locale.send,
             onPressed: () async {
               if (!formKey.currentState.validate()) return;
               formKey.currentState.save();
               formKey.currentState.reset();
               FocusScope.of(context).requestFocus(FocusNode());
               Scaffold.of(context)
-                  .showSnackBar(SnackBar(content: Text('Sending...')));
+                  .showSnackBar(SnackBar(content: Text(locale.sending)));
               Address fromAddress = wallet.addresses[fromInput];
               Transaction transaction = await wallet.newTransaction(
                   currency.signedTransaction(
@@ -260,11 +262,12 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                 transactionId = await peer.putTransaction(transaction);
               }
               if (transactionId != null)
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Sent ' + transactionId.toJson())));
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        locale.sentTransactionId(transactionId.toJson()))));
               else
                 Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text('Send failed')));
+                    .showSnackBar(SnackBar(content: Text(locale.sendFailed)));
             },
           ),
         ],
@@ -281,25 +284,21 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
   Future scan() async {
     try {
       String barcode = await BarcodeScanner.scan();
-      setState(() {
-        this.barcode = barcode;
-        toController.text = barcode;
-      });
+      debugPrint('scan: $barcode');
+      setState(() => toController.text = barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-        setState(() {
-          this.barcode = 'The user did not grant the camera permission!';
-        });
+        debugPrint(
+            'scan failed: The user did not grant the camera permission.');
       } else {
-        setState(() => this.barcode = 'Unknown error: $e');
+        debugPrint('scan failed: $e');
       }
     } on FormatException {
-      setState(() => this.barcode =
-          'null (User returned using the "back"-button before scanning anything. Result)');
+      debugPrint(
+          'scan aborted: User returned using the "back"-button before scanning anything.');
     } catch (e) {
-      setState(() => this.barcode = 'Unknown error: $e');
+      debugPrint('scan failed with unknown error: $e');
     }
-    debugPrint('scan: $barcode');
   }
 }
 

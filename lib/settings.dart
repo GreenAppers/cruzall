@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 
+import 'package:cruzall/cruzawl-ui/localizations.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzawl/preferences.dart';
@@ -19,14 +20,13 @@ class _CruzallSettingsState extends State<CruzallSettings> {
   Widget build(BuildContext context) {
     final Cruzawl appState =
         ScopedModel.of<Cruzawl>(context, rebuildOnChange: true);
+    final AppLocalizations locale = AppLocalizations.of(context);
     final bool encryptionEnabled = appState.preferences.walletsEncrypted;
     final bool warningEnabled = appState.preferences.insecureDeviceWarning;
     final bool unitTestBeforeCreating =
         appState.preferences.unitTestBeforeCreating;
     final bool verifyAddressEveryLoad =
         appState.preferences.verifyAddressEveryLoad;
-    final TextStyle labelStyle =
-        TextStyle(fontFamily: 'MartelSans', color: Colors.grey);
 
     final List<Widget> ret = <Widget>[
       Container(
@@ -36,14 +36,14 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ListTile(
         leading: Container(
             padding: EdgeInsets.all(10), child: Image.asset('assets/icon.png')),
-        title: Text('Version'),
+        title: Text(locale.version),
         trailing: Text(appState.packageInfo == null
-            ? 'Unknown'
+            ? locale.unknown
             : appState.packageInfo.version),
       ),
       ListTile(
         leading: Icon(Icons.color_lens),
-        title: Text('Theme'),
+        title: Text(locale.theme),
         trailing: DropdownButton<String>(
           value: appState.preferences.theme,
           onChanged: (String val) {
@@ -55,7 +55,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ),
       ListTile(
         leading: Icon(encryptionEnabled ? Icons.lock_outline : Icons.lock_open),
-        title: Text('Encryption'),
+        title: Text(locale.encryption),
         trailing: Switch(
           value: encryptionEnabled,
           onChanged: (bool value) async {
@@ -68,7 +68,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ),
       ListTile(
         leading: Icon(warningEnabled ? Icons.lock_outline : Icons.lock_open),
-        title: Text('Insecure device warning'),
+        title: Text(locale.insecureDeviceWarning),
         trailing: Switch(
           value: warningEnabled,
           onChanged: (bool value) => setState(
@@ -78,7 +78,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ListTile(
         leading:
             Icon(verifyAddressEveryLoad ? Icons.lock_outline : Icons.lock_open),
-        title: Text('Verify key pairs every load'),
+        title: Text(locale.verifyKeyPairsEveryLoad),
         trailing: Switch(
           value: verifyAddressEveryLoad,
           onChanged: (bool value) => setState(
@@ -88,7 +88,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ListTile(
         leading:
             Icon(unitTestBeforeCreating ? Icons.lock_outline : Icons.lock_open),
-        title: Text('Unit test before creating wallets'),
+        title: Text(locale.unitTestBeforeCreatingWallets),
         trailing: Switch(
           value: unitTestBeforeCreating,
           onChanged: (bool value) => setState(
@@ -96,7 +96,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         ),
       ),
       ListTile(
-        title: Text('Show wallet name in title'),
+        title: Text(locale.showWalletNameInTitle),
         trailing: Switch(
           value: appState.preferences.walletNameInTitle,
           onChanged: (bool value) {
@@ -106,7 +106,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
         ),
       ),
       ListTile(
-        title: Text('Debug log'),
+        title: Text(locale.debugLog),
         trailing: Switch(
           value: appState.preferences.debugLog,
           onChanged: (bool value) {
@@ -121,7 +121,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
       ret.add(
         Center(
           child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            Text('Debug Log ', style: labelStyle),
+            Text(locale.debugLog + ' ', style: appState.theme.labelStyle),
             IconButton(
               icon: Icon(Icons.content_copy),
               color: appState.theme.linkColor,
@@ -159,6 +159,8 @@ class _EnableEncryptionWidgetState extends State<EnableEncryptionWidget> {
 
   @override
   Widget build(BuildContext c) {
+    final AppLocalizations locale = AppLocalizations.of(c);
+
     return Form(
       key: formKey,
       child: ListView(children: <Widget>[
@@ -169,10 +171,10 @@ class _EnableEncryptionWidgetState extends State<EnableEncryptionWidget> {
             obscureText: true,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: locale.password,
             ),
             validator: (value) {
-              if (!(value.length > 0)) return "Password can't be empty.";
+              if (!(value.length > 0)) return locale.passwordCantBeEmpty;
               return null;
             },
             onSaved: (val) => password = val,
@@ -183,18 +185,18 @@ class _EnableEncryptionWidgetState extends State<EnableEncryptionWidget> {
             obscureText: true,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: 'Confirm password',
+              labelText: locale.confirmPassword,
             ),
             validator: (value) {
               if (passwordKey.currentState.value != value)
-                return "Passwords don't match.";
+                return locale.passwordsDontMatch;
               return null;
             },
             onSaved: (val) => confirm = val,
           ),
         ),
         RaisedGradientButton(
-          labelText: 'Encrypt',
+          labelText: locale.encrypt,
           padding: EdgeInsets.all(32),
           onPressed: () {
             if (!formKey.currentState.validate()) return;

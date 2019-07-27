@@ -9,6 +9,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
+import 'package:cruzall/cruzawl-ui/localizations.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/balance.dart';
@@ -32,26 +33,29 @@ class _CruzallWidgetState extends State<CruzallWidget> {
         widget.appState.preferences.insecureDeviceWarning)
       Future.delayed(Duration(seconds: 0)).then((_) => showDialog(
           context: context,
-          builder: (_) => AlertDialog(
-                title: Text('Insecure Device Warning'),
-                content: Text(
-                    'A rooted or jailbroken device has been detected.\n\nFurther use not recommended.',
-                    style: TextStyle(color: Colors.red)),
-                actions: <Widget>[
-                  FlatButton(
-                    child: const Text('Ignore'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32.0))),
-              )));
+          builder: (context) {
+            final AppLocalizations locale = AppLocalizations.of(context);
+            return AlertDialog(
+              title: Text(locale.insecureDeviceWarning),
+              content: Text(locale.insecureDeviceWarningDescription,
+                  style: TextStyle(color: Colors.red)),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text(locale.ignore),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+            );
+          }));
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final Currency currency = widget.wallet.currency;
+    final AppLocalizations locale = AppLocalizations.of(context);
 
     return DefaultTabController(
       length: 3,
@@ -62,9 +66,7 @@ class _CruzallWidgetState extends State<CruzallWidget> {
           title: Text(
             currency.ticker + ' +' + currency.format(widget.wallet.balance),
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: 'MartelSans',
-            ),
+            style: widget.appState.theme.titleStyle,
           ),
           backgroundColorStart: theme.primaryColor,
           backgroundColorEnd: theme.accentColor,
@@ -73,15 +75,15 @@ class _CruzallWidgetState extends State<CruzallWidget> {
             (PopupMenuBuilder()
                   ..addItem(
                     icon: Icon(Icons.settings),
-                    text: 'Settings',
+                    text: locale.settings,
                     onSelected: () =>
-                        Navigator.of(context).pushNamed('/settings'),
+                        widget.appState.navigateToSettings(context),
                   )
                   ..addItem(
                     icon: Icon(Icons.vpn_lock),
-                    text: 'Network',
+                    text: locale.network,
                     onSelected: () =>
-                        Navigator.of(context).pushNamed('/network'),
+                        widget.appState.navigateToNetwork(context),
                   ))
                 .build(
               icon: Icon(Icons.more_vert),
@@ -91,15 +93,15 @@ class _CruzallWidgetState extends State<CruzallWidget> {
             tabs: <Widget>[
               Tab(
                 icon: Icon(Icons.attach_money),
-                text: 'Receive',
+                text: locale.receive,
               ),
               Tab(
                 icon: Icon(Icons.receipt),
-                text: 'Balance',
+                text: locale.balance,
               ),
               Tab(
                 icon: Icon(Icons.send),
-                text: 'Send',
+                text: locale.send,
               ),
             ],
           ),
@@ -121,6 +123,7 @@ class _CruzallWidgetState extends State<CruzallWidget> {
 
   Widget buildWalletsMenu(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppLocalizations locale = AppLocalizations.of(context);
     final PopupMenuBuilder walletsMenu = PopupMenuBuilder();
 
     for (WalletModel x in widget.appState.wallets) {
@@ -130,14 +133,14 @@ class _CruzallWidgetState extends State<CruzallWidget> {
         icon: Icon(
             activeWallet ? Icons.check_box : Icons.check_box_outline_blank),
         onSelected: activeWallet
-            ? () => Navigator.of(context).pushNamed('/wallet')
+            ? () => widget.appState.navigateToWallet(context)
             : () => widget.appState.changeActiveWallet(x),
       );
     }
     walletsMenu.addItem(
       icon: Icon(Icons.add),
-      text: 'Add Wallet',
-      onSelected: () => Navigator.of(context).pushNamed('/addWallet'),
+      text: locale.addWallet,
+      onSelected: () => widget.appState.navigateToAddWallet(context),
     );
 
     return !widget.appState.preferences.walletNameInTitle
@@ -188,6 +191,7 @@ class _UnlockCruzallWidgetState extends State<UnlockCruzallWidget> {
   @override
   Widget build(BuildContext c) {
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
+    final AppLocalizations locale = AppLocalizations.of(context);
 
     return Form(
       key: formKey,
@@ -198,17 +202,17 @@ class _UnlockCruzallWidgetState extends State<UnlockCruzallWidget> {
             obscureText: true,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: locale.password,
             ),
             validator: (value) {
-              if (!(value.length > 0)) return "Password can't be empty.";
+              if (!(value.length > 0)) return locale.passwordCantBeEmpty;
               return null;
             },
             onSaved: (val) => password = val,
           ),
         ),
         RaisedGradientButton(
-          labelText: 'Unlock',
+          labelText: locale.unlock,
           padding: EdgeInsets.all(32),
           onPressed: () {
             if (!formKey.currentState.validate()) return;

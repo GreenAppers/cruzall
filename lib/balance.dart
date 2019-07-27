@@ -26,28 +26,26 @@ class WalletBalanceWidget extends StatelessWidget {
     final int numTransactions = wallet.transactions.data.length;
     final bool hasPeer =
         currency.network != null ? currency.network.hasPeer : false;
-    final TextStyle labelStyle =
-        TextStyle(fontFamily: 'MartelSans', color: Colors.grey);
-    final TextStyle linkStyle = TextStyle(
-      color: appState.theme.linkColor,
-    );
+    final TextStyle linkStyle = TextStyle(color: appState.theme.linkColor);
 
     final List<Widget> ret = <Widget>[
       Container(
         padding: EdgeInsets.only(top: 32),
         child: RichText(
           text: !hasPeer
-              ? TextSpan(text: locale.currentBalanceIs, style: labelStyle)
+              ? TextSpan(
+                  text: locale.currentBalanceIs,
+                  style: appState.theme.labelStyle)
               : AppLocalizations.parseTextSpan(
                   locale.balanceAtHeightIs(currency.network.tipHeight),
-                  style: labelStyle,
+                  style: appState.theme.labelStyle,
                   tags: <String, TextSpan>{
                     'a': TextSpan(
                       style: linkStyle,
                       text: '${currency.network.tipHeight}',
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () => Navigator.of(context)
-                            .pushNamed('/height/${currency.network.tipHeight}'),
+                        ..onTap = () => appState.navigateToHeight(
+                            context, currency.network.tipHeight),
                     ),
                   },
                 ),
@@ -64,7 +62,7 @@ class WalletBalanceWidget extends StatelessWidget {
 
     if (wallet.maturesBalance > 0) {
       ret.add(Text(locale.balanceMaturingByHeightIs(wallet.maturesHeight),
-          style: labelStyle));
+          style: appState.theme.labelStyle));
       ret.add(
         Container(
           padding: EdgeInsets.only(bottom: 32),
@@ -77,7 +75,7 @@ class WalletBalanceWidget extends StatelessWidget {
     }
 
     if (numTransactions > 0) {
-      ret.add(Text(locale.recentHistory, style: labelStyle));
+      ret.add(Text(locale.recentHistory, style: appState.theme.labelStyle));
       ret.add(
         Expanded(
           child: ListView.builder(
@@ -89,11 +87,10 @@ class WalletBalanceWidget extends StatelessWidget {
                   tx,
                   WalletTransactionInfo(wallet, tx),
                   onToTap: (tx) =>
-                      Navigator.of(context).pushNamed('/address/${tx.toText}'),
-                  onFromTap: (tx) => Navigator.of(context)
-                      .pushNamed('/address/${tx.fromText}'),
-                  onTap: (tx) => Navigator.of(context)
-                      .pushNamed('/transaction/' + tx.id().toJson()),
+                      appState.navigateToAddressText(context, tx.toText),
+                  onFromTap: (tx) =>
+                      appState.navigateToAddressText(context, tx.fromText),
+                  onTap: (tx) => appState.navigateToTransaction(context, tx),
                 );
               }),
         ),

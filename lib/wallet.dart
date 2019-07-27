@@ -29,10 +29,7 @@ class WalletWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final AppLocalizations locale = AppLocalizations.of(context);
-    final TextStyle labelTextStyle = TextStyle(
-      fontFamily: 'MartelSans',
-      color: Colors.grey,
-    );
+    final TextStyle labelTextStyle = appState.theme.labelStyle;
 
     List<Widget> header = <Widget>[
       ListTile(
@@ -117,7 +114,8 @@ class WalletWidget extends StatelessWidget {
                 content: ListTile(
                   leading: Icon(unitTests ? Icons.check : Icons.close),
                   title: Text(unitTests
-                      ? locale.verifyWalletResults(verifiedAddresses, addresses.length, ranTests, ranTests)
+                      ? locale.verifyWalletResults(verifiedAddresses,
+                          addresses.length, ranTests, ranTests)
                       : locale.unitTestFailure),
                 ),
               ),
@@ -141,7 +139,8 @@ class WalletWidget extends StatelessWidget {
           for (Address address in addresses)
             publicKeyList += '${address.publicKey.toJson()}\n';
           appState.setClipboardText(context, publicKeyList);
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text(locale.copied)));
+          Scaffold.of(context)
+              .showSnackBar(SnackBar(content: Text(locale.copied)));
         },
       ),
     ];
@@ -159,8 +158,7 @@ class WalletWidget extends StatelessWidget {
           return AddressListTile(
             wallet,
             address,
-            onTap: () => Navigator.of(context)
-                .pushNamed('/address/${address.publicKey.toJson()}'),
+            onTap: () => appState.navigateToAddress(context, address),
           );
         } else {
           int footerIndex = addressIndex - addresses.length;
@@ -174,8 +172,8 @@ class WalletWidget extends StatelessWidget {
   void deleteWallet(BuildContext context, Cruzawl appState) {
     final AppLocalizations locale = AppLocalizations.of(context);
     if (appState.wallets.length < 2) {
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(locale.cantDeleteOnlyWallet)));
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(locale.cantDeleteOnlyWallet)));
       return;
     }
 
@@ -183,7 +181,7 @@ class WalletWidget extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         content: TitledWidget(
-          title: 'Delete Wallet',
+          title: locale.deleteWallet,
           content: ListTile(
             leading: Icon(Icons.cast),
             title: Text(wallet.name),
@@ -193,11 +191,11 @@ class WalletWidget extends StatelessWidget {
         ),
         actions: <Widget>[
           FlatButton(
-            child: const Text('Cancel'),
+            child: Text(locale.cancel),
             onPressed: () => Navigator.of(context).pop(),
           ),
           FlatButton(
-            child: const Text('Delete'),
+            child: Text(locale.delete),
             onPressed: () {
               appState.removeWallet();
               appState.setState(() {});
@@ -227,7 +225,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
   final TextEditingController keyListController = TextEditingController();
   final TextEditingController seedPhraseController =
       TextEditingController(text: generateMnemonic());
-  String name = 'My wallet', seedPhrase = '', currency = 'CRUZ';
+  String name, seedPhrase = '', currency = 'CRUZ';
   bool hdWallet = true, watchOnlyWallet = false;
   List<PrivateKey> keyList;
   List<PublicAddress> publicKeyList;
@@ -241,8 +239,9 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
   @override
   Widget build(BuildContext c) {
     final AppLocalizations locale = AppLocalizations.of(c);
-    List<Widget> ret = <Widget>[];
+    if (name == null) name = locale.defaultWalletName;
 
+    List<Widget> ret = <Widget>[];
     ret.add(
       ListTile(
         subtitle: TextFormField(
@@ -250,10 +249,10 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
           initialValue: currency,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            labelText: 'Currency',
+            labelText: locale.currency,
           ),
           validator: (value) {
-            if (Currency.fromJson(value) == null) return 'Unknown address';
+            if (Currency.fromJson(value) == null) return locale.unknownAddress;
             return null;
           },
           onSaved: (value) => currency = value,
@@ -268,12 +267,12 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
           keyboardType: TextInputType.emailAddress,
           initialValue: name,
           decoration: InputDecoration(
-            labelText: 'Name',
+            labelText: locale.name,
           ),
           validator: (value) {
             if (widget.appState.wallets
                     .indexWhere((v) => v.wallet.name == value) !=
-                -1) return 'Name must be unique.';
+                -1) return locale.nameMustBeUnique;
             return null;
           },
           onSaved: (val) => name = val,
@@ -282,7 +281,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
     );
 
     ret.add(SwitchListTile(
-      title: Text('HD Wallet'),
+      title: Text(locale.hdWallet),
       value: hdWallet,
       onChanged: (bool value) => setState(() => hdWallet = value),
     ));
@@ -290,7 +289,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
     if (!hdWallet)
       ret.add(
         SwitchListTile(
-          title: Text('Watch-Only Wallet'),
+          title: Text(locale.watchOnlyWallet),
           value: watchOnlyWallet,
           onChanged: (bool value) => setState(() => watchOnlyWallet = value),
         ),
@@ -303,14 +302,14 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
           controller: seedPhraseController,
           keyboardType: TextInputType.multiline,
           decoration: InputDecoration(
-            labelText: 'Seed phrase',
+            labelText: locale.seedPhrase,
             suffixIcon: IconButton(
               icon: Icon(Icons.refresh),
               onPressed: () => seedPhraseController.text = generateMnemonic(),
             ),
           ),
           validator: (value) {
-            if (!validateMnemonic(value)) return 'Invalid mnemonic.';
+            if (!validateMnemonic(value)) return locale.invalidMnemonic;
             return null;
           },
           onSaved: (val) => seedPhrase = val,
@@ -324,17 +323,17 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                 controller: keyListController,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
-                  labelText: 'Public Key List',
+                  labelText: locale.publicKeyList,
                 ),
                 validator: (value) {
                   Currency cur = Currency.fromJson(currency);
-                  if (cur == null) return 'Invalid currency';
+                  if (cur == null) return locale.invalidCurrency;
                   try {
                     List<PublicAddress> keys = value
                         .split('\\s+')
                         .map((key) => cur.fromPublicAddressJson(key))
                         .toList();
-                    if (keys.length <= 0) return 'No public keys';
+                    if (keys.length <= 0) return locale.noPublicKeys;
                   } catch (error) {
                     return '$error';
                   }
@@ -357,20 +356,20 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
                 controller: keyListController,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
-                  labelText: 'Private Key List',
+                  labelText: locale.privateKeyList,
                 ),
                 validator: (value) {
                   Currency cur = Currency.fromJson(currency);
-                  if (cur == null) return 'Invalid currency';
+                  if (cur == null) return locale.invalidCurrency;
                   try {
                     List<PrivateKey> keys = value
                         .split('\\s+')
                         .map((key) => cur.fromPrivateKeyJson(key))
                         .toList();
-                    if (keys.length <= 0) return 'No private keys';
+                    if (keys.length <= 0) return locale.noPrivateKeys;
                     for (PrivateKey key in keys)
                       if (!cur.fromPrivateKey(key).verify())
-                        return 'verify failed: ${key.toJson()}';
+                        return locale.verifyAddressFailed(key.toJson());
                   } catch (error) {
                     return '$error';
                   }
@@ -394,9 +393,10 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
           if (!formKey.currentState.validate()) return;
           formKey.currentState.save();
           FocusScope.of(context).requestFocus(FocusNode());
-          String explanation = hdWallet ? ' (PBKDF: 2048 iterations)' : '';
-          Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text('Creating... $explanation')));
+          Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text(hdWallet
+                  ? locale.creatingUsingAlgorithm(locale.hdWalletAlgorithm)
+                  : locale.creating)));
           widget.appState.setState(() => widget.appState.walletsLoading++);
           await Future.delayed(Duration(seconds: 1));
 

@@ -13,6 +13,7 @@ import 'package:cruzawl/network.dart';
 import 'package:cruzawl/util.dart';
 import 'package:cruzawl/wallet.dart';
 
+import 'package:cruzall/cruzawl-ui/localizations.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
@@ -30,10 +31,6 @@ class AddressWidget extends StatefulWidget {
 class _AddressWidgetState extends State<AddressWidget> {
   List<Widget> header;
   SortedListSet<Transaction> transactions;
-  final TextStyle labelTextStyle = TextStyle(
-    fontFamily: 'MartelSans',
-    color: Colors.grey,
-  );
 
   void loadTransactions() {
     String addressText = widget.address.publicKey.toJson();
@@ -54,8 +51,10 @@ class _AddressWidgetState extends State<AddressWidget> {
   Widget build(BuildContext context) {
     final Address address = widget.address;
     final String addressText = address.publicKey.toJson();
+    final AppLocalizations locale = AppLocalizations.of(context);
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Size screenSize = MediaQuery.of(context).size;
+    final TextStyle labelTextStyle = appState.theme.labelStyle;
     final bool fullyLoaded =
         address.loadedHeight == 0 && address.loadedIndex == 0;
 
@@ -68,7 +67,7 @@ class _AddressWidgetState extends State<AddressWidget> {
       ),
       Container(
         padding: const EdgeInsets.only(top: 16),
-        child: Text('Address', style: labelTextStyle),
+        child: Text(locale.address, style: labelTextStyle),
       ),
       Container(
         padding: EdgeInsets.only(right: 32),
@@ -78,7 +77,7 @@ class _AddressWidgetState extends State<AddressWidget> {
 
     if (address.chainCode != null)
       top.add(HideableWidget(
-        title: 'Chain Code',
+        title: locale.chainCode,
         child:
             CopyableText(address.chainCode.toJson(), appState.setClipboardText),
       ));
@@ -86,7 +85,7 @@ class _AddressWidgetState extends State<AddressWidget> {
     if (address.privateKey != null)
       top.add(
         HideableWidget(
-          title: 'Private Key',
+          title: locale.privateKey,
           child: CopyableText(
               address.privateKey.toJson(), appState.setClipboardText),
         ),
@@ -104,32 +103,32 @@ class _AddressWidgetState extends State<AddressWidget> {
 
     header.add(
       ListTile(
-        title: Text('Account', style: labelTextStyle),
+        title: Text(locale.account, style: labelTextStyle),
         trailing: Text(address.accountId.toString()),
       ),
     );
     if (address.chainIndex != null)
       header.add(
         ListTile(
-          title: Text('Chain Index', style: labelTextStyle),
+          title: Text(locale.chainIndex, style: labelTextStyle),
           trailing: Text(address.chainIndex.toString()),
         ),
       );
     header.add(
       ListTile(
-        title: Text('State', style: labelTextStyle),
+        title: Text(locale.state, style: labelTextStyle),
         trailing: Text(address.state.toString().split('.')[1]),
       ),
     );
     header.add(
       ListTile(
-        title: Text('Balance', style: labelTextStyle),
+        title: Text(locale.balance, style: labelTextStyle),
         trailing: Text(widget.wallet.currency.format(address.balance)),
       ),
     );
     header.add(
       ListTile(
-        title: Text('Transactions', style: labelTextStyle),
+        title: Text(locale.transactions, style: labelTextStyle),
         trailing:
             Text((transactions != null ? transactions.length : 0).toString()),
       ),
@@ -137,14 +136,14 @@ class _AddressWidgetState extends State<AddressWidget> {
     if (address.earliestSeen != null)
       header.add(
         ListTile(
-          title: Text('Earliest seen', style: labelTextStyle),
+          title: Text(locale.earliestSeen, style: labelTextStyle),
           trailing: Text(address.earliestSeen.toString()),
         ),
       );
     if (address.latestSeen != null)
       header.add(
         ListTile(
-          title: Text('Latest seen', style: labelTextStyle),
+          title: Text(locale.latestSeen, style: labelTextStyle),
           trailing: Text(address.latestSeen.toString()),
         ),
       );
@@ -161,16 +160,20 @@ class _AddressWidgetState extends State<AddressWidget> {
 
   Widget itemBuilder(BuildContext context, int index) {
     if (index < header.length) return header[index];
-    if (index == header.length)
-      return Center(child: Text('Transactions', style: labelTextStyle));
+    if (index == header.length) {
+      final AppLocalizations locale = AppLocalizations.of(context);
+      final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
+      final TextStyle labelTextStyle = appState.theme.labelStyle;
+      return Center(child: Text(locale.transactions, style: labelTextStyle));
+    }
 
     int transactionIndex = index - header.length - 1;
     if (transactionIndex < transactions.length) {
+      final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
       Transaction tx = transactions.data[transactionIndex];
       return TransactionListTile(
           widget.wallet.currency, tx, WalletTransactionInfo(widget.wallet, tx),
-          onTap: (tx) => Navigator.of(context)
-              .pushNamed('/transaction/' + tx.id().toJson()));
+          onTap: (tx) => appState.navigateToTransaction(context, tx));
     }
 
     assert(
