@@ -37,9 +37,9 @@ class WalletBalanceWidget extends StatelessWidget {
         padding: EdgeInsets.only(top: 32),
         child: RichText(
           text: !hasPeer
-              ? TextSpan(text: locale.currentBalance, style: labelStyle)
+              ? TextSpan(text: locale.currentBalanceIs, style: labelStyle)
               : AppLocalizations.parseTextSpan(
-                  locale.balanceAtHeight(currency.network.tipHeight),
+                  locale.balanceAtHeightIs(currency.network.tipHeight),
                   style: labelStyle,
                   tags: <String, TextSpan>{
                     'a': TextSpan(
@@ -63,7 +63,7 @@ class WalletBalanceWidget extends StatelessWidget {
     ];
 
     if (wallet.maturesBalance > 0) {
-      ret.add(Text(locale.balanceMaturingByHeight(wallet.maturesHeight),
+      ret.add(Text(locale.balanceMaturingByHeightIs(wallet.maturesHeight),
           style: labelStyle));
       ret.add(
         Container(
