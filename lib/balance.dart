@@ -36,15 +36,14 @@ class WalletBalanceWidget extends StatelessWidget {
               ? TextSpan(
                   text: locale.currentBalanceIs,
                   style: appState.theme.labelStyle)
-              : Localization.parseTextSpan(
+              : buildLocalizationMarkupTextSpan(
                   locale.balanceAtHeightIs(currency.network.tipHeight),
                   style: appState.theme.labelStyle,
-                  tags: <String, TextSpan>{
-                    'a': TextSpan(
+                  tags: <String, LocalizationMarkup>{
+                    'a': LocalizationMarkup(
                       style: linkStyle,
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => appState.navigateToHeight(
-                            context, currency.network.tipHeight),
+                      onTap: () => appState.navigateToHeight(
+                          context, currency.network.tipHeight),
                     ),
                   },
                 ),

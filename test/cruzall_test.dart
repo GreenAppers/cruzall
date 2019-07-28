@@ -17,7 +17,7 @@ import 'package:cruzawl/test.dart';
 import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/wallet.dart';
@@ -50,7 +50,7 @@ void main() async {
     await tester.pumpWidget(ScopedModel(
         model: appState,
         child: MaterialApp(localizationsDelegates: <LocalizationsDelegate>[
-          AppLocalizationsDelegate(),
+          LocalizationDelegate(),
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate
         ], supportedLocales: <Locale>[
