@@ -12,7 +12,7 @@ import 'package:cruzawl/network.dart';
 import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/address.dart';
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 
@@ -42,7 +42,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final TextStyle labelTextStyle = appState.theme.titleStyle;
     final Wallet wallet =

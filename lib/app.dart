@@ -15,7 +15,7 @@ import 'package:cruzall/cruzall.dart';
 import 'package:cruzall/cruzawl-ui/address.dart';
 import 'package:cruzall/cruzawl-ui/block.dart';
 import 'package:cruzall/cruzawl-ui/cruzbase.dart';
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/network.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
@@ -23,6 +23,47 @@ import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/send.dart';
 import 'package:cruzall/settings.dart';
 import 'package:cruzall/wallet.dart';
+
+class WelcomeWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Localization locale = Localization.of(context);
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
+    return SimpleScaffold(
+      Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.only(top: 32),
+            child: Text(locale.welcomeDesc),
+          ),
+          Expanded(
+            child: AddWalletWidget(appState, welcome: true),
+          ),
+        ],
+      ),
+      title: locale.welcomeTitle,
+    );
+  }
+}
+
+class UnlockWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SimpleScaffold(
+      UnlockCruzallWidget(),
+      title: Localization.of(context).unlockTitle,
+    );
+  }
+}
+
+class FatalWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
+    return SimpleScaffold(ErrorWidget.builder(appState.fatal),
+        title: Localization.of(context).title);
+  }
+}
 
 class CruzallApp extends StatefulWidget {
   final Cruzawl appState;
@@ -57,7 +98,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
     final Cruzawl appState =
         ScopedModel.of<Cruzawl>(context, rebuildOnChange: true);
     final localizationsDelegates = <LocalizationsDelegate>[
-      AppLocalizationsDelegate(),
+      LocalizationDelegate(),
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate
     ];
@@ -71,9 +112,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
           supportedLocales: supportedLocales,
           localizationsDelegates: localizationsDelegates,
           onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context).title,
-          home: SimpleScaffold(ErrorWidget.builder(appState.fatal),
-              title: 'Cruzall'),
+              Localization.of(context).title,
+          home: FatalWidget(),
         );
 
       if (appState.preferences.walletsEncrypted)
@@ -83,11 +123,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
           supportedLocales: supportedLocales,
           localizationsDelegates: localizationsDelegates,
           onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context).title,
-          home: SimpleScaffold(
-            UnlockCruzallWidget(),
-            title: 'Unlock Cruzall',
-          ),
+              Localization.of(context).title,
+          home: UnlockWidget(),
         );
 
       return MaterialApp(
@@ -96,21 +133,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         supportedLocales: supportedLocales,
         localizationsDelegates: localizationsDelegates,
         onGenerateTitle: (BuildContext context) =>
-            AppLocalizations.of(context).title,
-        home: SimpleScaffold(
-          Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(top: 32),
-                child: Text('To begin, create a wallet:'),
-              ),
-              Expanded(
-                child: AddWalletWidget(appState, welcome: true),
-              ),
-            ],
-          ),
-          title: 'Welcome to Cruzall',
-        ),
+            Localization.of(context).title,
+        home: WelcomeWidget(),
       );
     }
 
@@ -121,30 +145,35 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         supportedLocales: supportedLocales,
         localizationsDelegates: localizationsDelegates,
         onGenerateTitle: (BuildContext context) =>
-            AppLocalizations.of(context).title,
+            Localization.of(context).title,
         home: ScopedModel(
           model: appState.wallet,
           child: CruzallWidget(wallet, appState),
         ),
         routes: <String, WidgetBuilder>{
-          '/settings': (BuildContext context) =>
-              SimpleScaffold(CruzallSettings(), title: 'Settings'),
+          '/settings': (BuildContext context) => SimpleScaffold(
+              CruzallSettings(),
+              title: Localization.of(context).settings),
           '/network': (BuildContext context) => ScopedModel(
               model: appState.wallet,
               child: ScopedModelDescendant<WalletModel>(
                   builder: (context, child, model) => SimpleScaffold(
                       CruzawlNetworkSettings(),
-                      title: wallet.currency.ticker + ' Network'))),
+                      title: Localization.of(context)
+                          .networkType(wallet.currency.ticker)))),
           '/wallet': (BuildContext context) =>
               SimpleScaffold(WalletWidget(wallet), title: wallet.name),
-          '/addWallet': (BuildContext context) =>
-              SimpleScaffold(AddWalletWidget(appState), title: 'New Wallet'),
-          '/addPeer': (BuildContext context) =>
-              SimpleScaffold(AddPeerWidget(), title: 'New Peer'),
-          '/sendFrom': (BuildContext context) =>
-              SimpleScaffold(SendFromWidget(wallet), title: 'From'),
-          '/enableEncryption': (BuildContext context) =>
-              SimpleScaffold(EnableEncryptionWidget(), title: 'Encryption'),
+          '/addWallet': (BuildContext context) => SimpleScaffold(
+              AddWalletWidget(appState),
+              title: Localization.of(context).newWallet),
+          '/addPeer': (BuildContext context) => SimpleScaffold(AddPeerWidget(),
+              title: Localization.of(context).newPeer),
+          '/sendFrom': (BuildContext context) => SimpleScaffold(
+              SendFromWidget(wallet),
+              title: Localization.of(context).from),
+          '/enableEncryption': (BuildContext context) => SimpleScaffold(
+              EnableEncryptionWidget(),
+              title: Localization.of(context).encryption),
         },
         onGenerateRoute: (settings) {
           final String name = settings.name;
@@ -165,14 +194,15 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
                   Address address = wallet.addresses[addressText];
                   return address != null
                       ? SimpleScaffold(AddressWidget(wallet, address),
-                          title: 'Address')
+                          title: Localization.of(context).address)
                       : ScopedModel(
                           model: appState.wallet,
                           child: ScopedModelDescendant<WalletModel>(
                               builder: (context, child, model) =>
                                   ExternalAddressWidget(
                                       wallet.currency, addressText,
-                                      title: 'External Address')));
+                                      title: Localization.of(context)
+                                          .externalAddress)));
                 });
           } else if (name.startsWith(block))
             return MaterialPageRoute(
@@ -214,8 +244,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
                           transaction: transaction)
                       : TransactionWidget(wallet.currency, TransactionInfo(),
                           transactionIdText: transactionIdText,
-                          onHeightTap: (tx) => Navigator.of(context)
-                              .pushNamed('/height/' + tx.height.toString()));
+                          onHeightTap: (tx) =>
+                              appState.navigateToHeight(context, tx.height));
                 }),
               ),
             );

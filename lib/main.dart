@@ -16,7 +16,7 @@ import 'package:trust_fall/trust_fall.dart';
 import 'package:cruzawl/preferences.dart';
 
 import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 
 void main() async {
@@ -28,7 +28,7 @@ void main() async {
   SetClipboardText setClipboardText = (BuildContext context, String text) =>
       Clipboard.setData(ClipboardData(text: text)).then((result) =>
           Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text(AppLocalizations.of(context).copied))));
+              SnackBar(content: Text(Localization.of(context).copied))));
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
   Cruzawl appState = Cruzawl(

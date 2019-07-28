@@ -9,7 +9,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/wallet.dart';
@@ -18,7 +18,7 @@ class WalletBalanceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Wallet wallet =
         ScopedModel.of<WalletModel>(context, rebuildOnChange: true).wallet;
@@ -36,13 +36,12 @@ class WalletBalanceWidget extends StatelessWidget {
               ? TextSpan(
                   text: locale.currentBalanceIs,
                   style: appState.theme.labelStyle)
-              : AppLocalizations.parseTextSpan(
+              : Localization.parseTextSpan(
                   locale.balanceAtHeightIs(currency.network.tipHeight),
                   style: appState.theme.labelStyle,
                   tags: <String, TextSpan>{
                     'a': TextSpan(
                       style: linkStyle,
-                      text: '${currency.network.tipHeight}',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () => appState.navigateToHeight(
                             context, currency.network.tipHeight),

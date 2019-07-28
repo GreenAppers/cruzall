@@ -13,7 +13,7 @@ import 'package:cruzawl/util.dart';
 import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/address.dart';
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
@@ -28,7 +28,7 @@ class WalletWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     final TextStyle labelTextStyle = appState.theme.labelStyle;
 
     List<Widget> header = <Widget>[
@@ -170,7 +170,7 @@ class WalletWidget extends StatelessWidget {
   }
 
   void deleteWallet(BuildContext context, Cruzawl appState) {
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     if (appState.wallets.length < 2) {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text(locale.cantDeleteOnlyWallet)));
@@ -238,7 +238,7 @@ class _AddWalletWidgetState extends State<AddWalletWidget> {
 
   @override
   Widget build(BuildContext c) {
-    final AppLocalizations locale = AppLocalizations.of(c);
+    final Localization locale = Localization.of(c);
     if (name == null) name = locale.defaultWalletName;
 
     List<Widget> ret = <Widget>[];

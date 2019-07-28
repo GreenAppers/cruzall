@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzawl/preferences.dart';
@@ -20,7 +20,7 @@ class _CruzallSettingsState extends State<CruzallSettings> {
   Widget build(BuildContext context) {
     final Cruzawl appState =
         ScopedModel.of<Cruzawl>(context, rebuildOnChange: true);
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     final bool encryptionEnabled = appState.preferences.walletsEncrypted;
     final bool warningEnabled = appState.preferences.insecureDeviceWarning;
     final bool unitTestBeforeCreating =
@@ -159,7 +159,7 @@ class _EnableEncryptionWidgetState extends State<EnableEncryptionWidget> {
 
   @override
   Widget build(BuildContext c) {
-    final AppLocalizations locale = AppLocalizations.of(c);
+    final Localization locale = Localization.of(c);
 
     return Form(
       key: formKey,

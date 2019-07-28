@@ -9,7 +9,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/balance.dart';
@@ -34,7 +34,7 @@ class _CruzallWidgetState extends State<CruzallWidget> {
       Future.delayed(Duration(seconds: 0)).then((_) => showDialog(
           context: context,
           builder: (context) {
-            final AppLocalizations locale = AppLocalizations.of(context);
+            final Localization locale = Localization.of(context);
             return AlertDialog(
               title: Text(locale.insecureDeviceWarning),
               content: Text(locale.insecureDeviceWarningDescription,
@@ -55,7 +55,7 @@ class _CruzallWidgetState extends State<CruzallWidget> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final Currency currency = widget.wallet.currency;
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
 
     return DefaultTabController(
       length: 3,
@@ -64,7 +64,8 @@ class _CruzallWidgetState extends State<CruzallWidget> {
         appBar: GradientAppBar(
           centerTitle: true,
           title: Text(
-            currency.ticker + ' +' + currency.format(widget.wallet.balance),
+            locale.balanceTitle(
+                currency.ticker, currency.format(widget.wallet.balance)),
             overflow: TextOverflow.ellipsis,
             style: widget.appState.theme.titleStyle,
           ),
@@ -123,7 +124,7 @@ class _CruzallWidgetState extends State<CruzallWidget> {
 
   Widget buildWalletsMenu(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     final PopupMenuBuilder walletsMenu = PopupMenuBuilder();
 
     for (WalletModel x in widget.appState.wallets) {
@@ -191,7 +192,7 @@ class _UnlockCruzallWidgetState extends State<UnlockCruzallWidget> {
   @override
   Widget build(BuildContext c) {
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
 
     return Form(
       key: formKey,

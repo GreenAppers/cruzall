@@ -13,7 +13,7 @@ import 'package:cruzawl/network.dart';
 import 'package:cruzawl/util.dart';
 import 'package:cruzawl/wallet.dart';
 
-import 'package:cruzall/cruzawl-ui/localizations.dart';
+import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
@@ -51,7 +51,7 @@ class _AddressWidgetState extends State<AddressWidget> {
   Widget build(BuildContext context) {
     final Address address = widget.address;
     final String addressText = address.publicKey.toJson();
-    final AppLocalizations locale = AppLocalizations.of(context);
+    final Localization locale = Localization.of(context);
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final TextStyle labelTextStyle = appState.theme.labelStyle;
@@ -161,7 +161,7 @@ class _AddressWidgetState extends State<AddressWidget> {
   Widget itemBuilder(BuildContext context, int index) {
     if (index < header.length) return header[index];
     if (index == header.length) {
-      final AppLocalizations locale = AppLocalizations.of(context);
+      final Localization locale = Localization.of(context);
       final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
       final TextStyle labelTextStyle = appState.theme.labelStyle;
       return Center(child: Text(locale.transactions, style: labelTextStyle));
