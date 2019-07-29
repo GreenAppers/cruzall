@@ -20,7 +20,7 @@ import 'package:cruzall/app.dart';
 import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/wallet.dart';
+import 'package:cruzall/cruzawl-ui/wallet/settings.dart';
 
 void main() async {
   CruzawlPreferences preferences = CruzawlPreferences(
@@ -45,17 +45,21 @@ void main() async {
         preferences.minimumReserveAddress);
   });
 
-  testWidgets('WalletWidget Verify', (WidgetTester tester) async {
+  testWidgets('WalletSettingsWidget Verify', (WidgetTester tester) async {
     Wallet wallet = appState.wallet.wallet;
     await tester.pumpWidget(ScopedModel(
         model: appState,
-        child: MaterialApp(localizationsDelegates: <LocalizationsDelegate>[
-          LocalizationDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate
-        ], supportedLocales: <Locale>[
-          Locale("en")
-        ], home: SimpleScaffold(WalletWidget(wallet), title: wallet.name))));
+        child: MaterialApp(
+            localizationsDelegates: <LocalizationsDelegate>[
+              LocalizationDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            supportedLocales: <Locale>[
+              Locale("en")
+            ],
+            home: SimpleScaffold(WalletSettingsWidget(wallet),
+                title: wallet.name))));
     await tester.pumpAndSettle();
     await tester.drag(find.text('Addresses'), Offset(0.0, -400));
     await tester.pump();

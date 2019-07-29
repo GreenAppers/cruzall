@@ -10,21 +10,21 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
-import 'package:cruzall/address.dart';
-import 'package:cruzall/cruzall.dart';
 import 'package:cruzall/cruzawl-ui/address.dart';
 import 'package:cruzall/cruzawl-ui/block.dart';
 import 'package:cruzall/cruzawl-ui/cruzbase.dart';
 import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 import 'package:cruzall/cruzawl-ui/network.dart';
+import 'package:cruzall/cruzawl-ui/settings.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/send.dart';
-import 'package:cruzall/settings.dart';
-import 'package:cruzall/wallet.dart';
+import 'package:cruzall/cruzawl-ui/wallet/address.dart';
+import 'package:cruzall/cruzawl-ui/wallet/send.dart';
+import 'package:cruzall/cruzawl-ui/wallet/settings.dart';
+import 'package:cruzall/cruzawl-ui/wallet/wallet.dart';
 
-class WelcomeWidget extends StatelessWidget {
+class WelcomeToCruzallWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Localization locale = Localization.of(context);
@@ -46,22 +46,54 @@ class WelcomeWidget extends StatelessWidget {
   }
 }
 
-class UnlockWidget extends StatelessWidget {
+class UnlockCruzallWidget extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return SimpleScaffold(
-      UnlockCruzallWidget(),
-      title: Localization.of(context).unlockTitle,
-    );
-  }
+  _UnlockCruzallWidgetState createState() => _UnlockCruzallWidgetState();
 }
 
-class FatalWidget extends StatelessWidget {
+class _UnlockCruzallWidgetState extends State<UnlockCruzallWidget> {
+  final formKey = GlobalKey<FormState>();
+  String password;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext c) {
     final Cruzawl appState = ScopedModel.of<Cruzawl>(context);
-    return SimpleScaffold(ErrorWidget.builder(appState.fatal),
-        title: Localization.of(context).title);
+    final Localization locale = Localization.of(context);
+
+    return SimpleScaffold(
+      Form(
+        key: formKey,
+        child: ListView(children: <Widget>[
+          ListTile(
+            subtitle: TextFormField(
+              autofocus: true,
+              obscureText: true,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: locale.password,
+              ),
+              validator: (value) {
+                if (!(value.length > 0)) return locale.passwordCantBeEmpty;
+                return null;
+              },
+              onSaved: (val) => password = val,
+            ),
+          ),
+          RaisedGradientButton(
+            labelText: locale.unlock,
+            padding: EdgeInsets.all(32),
+            onPressed: () {
+              if (!formKey.currentState.validate()) return;
+              formKey.currentState.save();
+              formKey.currentState.reset();
+              if (appState.unlockWallets(password))
+                appState.setState(() => appState.openWallets());
+            },
+          ),
+        ]),
+      ),
+      title: locale.unlockTitle,
+    );
   }
 }
 
@@ -113,7 +145,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
           localizationsDelegates: localizationsDelegates,
           onGenerateTitle: (BuildContext context) =>
               Localization.of(context).title,
-          home: FatalWidget(),
+          home: SimpleScaffold(ErrorWidget.builder(appState.fatal)),
         );
 
       if (appState.preferences.walletsEncrypted)
@@ -124,7 +156,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
           localizationsDelegates: localizationsDelegates,
           onGenerateTitle: (BuildContext context) =>
               Localization.of(context).title,
-          home: UnlockWidget(),
+          home: UnlockCruzallWidget(),
         );
 
       return MaterialApp(
@@ -134,7 +166,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         localizationsDelegates: localizationsDelegates,
         onGenerateTitle: (BuildContext context) =>
             Localization.of(context).title,
-        home: WelcomeWidget(),
+        home: WelcomeToCruzallWidget(),
       );
     }
 
@@ -148,7 +180,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
             Localization.of(context).title,
         home: ScopedModel(
           model: appState.wallet,
-          child: CruzallWidget(wallet, appState),
+          child: WalletWidget(wallet, appState),
         ),
         routes: <String, WidgetBuilder>{
           '/settings': (BuildContext context) => SimpleScaffold(
@@ -164,7 +196,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
                         .networkType(locale.ticker(wallet.currency.ticker)));
               })),
           '/wallet': (BuildContext context) =>
-              SimpleScaffold(WalletWidget(wallet), title: wallet.name),
+              SimpleScaffold(WalletSettingsWidget(wallet), title: wallet.name),
           '/addWallet': (BuildContext context) => SimpleScaffold(
               AddWalletWidget(appState),
               title: Localization.of(context).newWallet),
