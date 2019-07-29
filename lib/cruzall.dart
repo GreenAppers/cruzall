@@ -64,8 +64,8 @@ class _CruzallWidgetState extends State<CruzallWidget> {
         appBar: GradientAppBar(
           centerTitle: true,
           title: Text(
-            locale.balanceTitle(
-                currency.ticker, currency.format(widget.wallet.balance)),
+            locale.balanceTitle(locale.ticker(currency.ticker),
+                currency.format(widget.wallet.balance)),
             overflow: TextOverflow.ellipsis,
             style: widget.appState.theme.titleStyle,
           ),

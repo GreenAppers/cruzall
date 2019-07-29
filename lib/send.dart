@@ -171,7 +171,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                           TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         hintText: '0.0',
-                        suffixText: ' ' + currency.ticker,
+                        suffixText: ' ' + locale.ticker(currency.ticker),
                       ),
                       validator: (value) {
                         num v = currency.parse(value);
@@ -208,7 +208,7 @@ class _WalletSendWidgetState extends State<WalletSendWidget> {
                           TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         hintText: currency.suggestedFee(null),
-                        suffixText: ' ' + currency.ticker,
+                        suffixText: ' ' + locale.ticker(currency.ticker),
                       ),
                       validator: (value) {
                         num v = currency.parse(value);
