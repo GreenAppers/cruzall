@@ -19,6 +19,7 @@ import 'package:cruzall/cruzawl-ui/network.dart';
 import 'package:cruzall/cruzawl-ui/settings.dart';
 import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
+import 'package:cruzall/cruzawl-ui/wallet/add.dart';
 import 'package:cruzall/cruzawl-ui/wallet/address.dart';
 import 'package:cruzall/cruzawl-ui/wallet/send.dart';
 import 'package:cruzall/cruzawl-ui/wallet/settings.dart';
@@ -254,6 +255,17 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
                     builder: (context, child, model) => BlockWidget(
                         wallet.currency,
                         blockHeight: int.parse(page.arg)),
+                  ),
+                ),
+              );
+            case 'tip':
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (context) => ScopedModel(
+                  model: appState.wallet,
+                  child: ScopedModelDescendant<WalletModel>(
+                    builder: (context, child, model) =>
+                        BlockWidget(wallet.currency),
                   ),
                 ),
               );
