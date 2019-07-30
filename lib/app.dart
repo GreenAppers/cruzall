@@ -135,14 +135,14 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate
     ];
-    final supportedLocales = <Locale>[Locale("en"), Locale("zh")];
 
     if (appState.wallets.length == 0) {
       if (appState.fatal != null)
         return MaterialApp(
           theme: appState.theme.data,
           debugShowCheckedModeBanner: false,
-          supportedLocales: supportedLocales,
+          locale: appState.localeOverride,
+          supportedLocales: Localization.supportedLocales,
           localizationsDelegates: localizationsDelegates,
           onGenerateTitle: (BuildContext context) =>
               Localization.of(context).title,
@@ -153,7 +153,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         return MaterialApp(
           theme: appState.theme.data,
           debugShowCheckedModeBanner: false,
-          supportedLocales: supportedLocales,
+          locale: appState.localeOverride,
+          supportedLocales: Localization.supportedLocales,
           localizationsDelegates: localizationsDelegates,
           onGenerateTitle: (BuildContext context) =>
               Localization.of(context).title,
@@ -163,7 +164,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
       return MaterialApp(
         theme: appState.theme.data,
         debugShowCheckedModeBanner: false,
-        supportedLocales: supportedLocales,
+        locale: appState.localeOverride,
+        supportedLocales: Localization.supportedLocales,
         localizationsDelegates: localizationsDelegates,
         onGenerateTitle: (BuildContext context) =>
             Localization.of(context).title,
@@ -175,7 +177,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
     return MaterialApp(
         theme: appState.theme.data,
         debugShowCheckedModeBanner: false,
-        supportedLocales: supportedLocales,
+        locale: appState.localeOverride,
+        supportedLocales: Localization.supportedLocales,
         localizationsDelegates: localizationsDelegates,
         onGenerateTitle: (BuildContext context) =>
             Localization.of(context).title,
@@ -209,6 +212,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
           '/enableEncryption': (BuildContext context) => SimpleScaffold(
               EnableEncryptionWidget(),
               title: Localization.of(context).encryption),
+          '/support': (BuildContext context) => SimpleScaffold(CruzallSupport(),
+              title: Localization.of(context).support),
         },
         onGenerateRoute: (settings) {
           final PagePath page = parsePagePath(settings.name);

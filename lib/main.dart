@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:trust_fall/trust_fall.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:cruzawl/preferences.dart';
 
@@ -19,20 +20,31 @@ import 'package:cruzall/app.dart';
 import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 
+void setClipboardText(BuildContext context, String text) =>
+    Clipboard.setData(ClipboardData(text: text)).then((result) =>
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text(Localization.of(context).copied))));
+
+void launchUrl(BuildContext context, String url) async {
+  debugPrint('Launching $url');
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    debugPrint('Could not launch $url');
+    setClipboardText(context, url);
+  }
+}
+
 void main() async {
   bool isTrustFall = await TrustFall.isTrustFall;
   packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
   Directory dataDir = await getApplicationDocumentsDirectory();
   debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
 
-  SetClipboardText setClipboardText = (BuildContext context, String text) =>
-      Clipboard.setData(ClipboardData(text: text)).then((result) =>
-          Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text(Localization.of(context).copied))));
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzawl appState = Cruzawl(
-      setClipboardText, databaseFactoryIo, await preferences.load(), dataDir,
+  Cruzawl appState = Cruzawl(launchUrl, setClipboardText, databaseFactoryIo,
+      await preferences.load(), dataDir,
       packageInfo: PackageInfo(
           info.appName, info.packageName, info.version, info.buildNumber),
       isTrustFall: isTrustFall);
