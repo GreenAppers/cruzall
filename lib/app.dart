@@ -188,7 +188,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
         ),
         routes: <String, WidgetBuilder>{
           '/settings': (BuildContext context) => SimpleScaffold(
-              CruzallSettings(),
+              CruzallSettings(walletSettings: true),
               title: Localization.of(context).settings),
           '/network': (BuildContext context) => ScopedModel(
               model: appState.wallet,

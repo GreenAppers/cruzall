@@ -29,7 +29,8 @@ void main() async {
   await preferences.load();
   preferences.networkEnabled = false;
   preferences.minimumReserveAddress = 3;
-  Cruzawl appState = Cruzawl((BuildContext c, String x) {},
+  SetClipboardText stringCallback = (BuildContext c, String x) {};
+  Cruzawl appState = Cruzawl((String x) => x, stringCallback, stringCallback,
       databaseFactoryMemoryFs, preferences, Directory(''));
 
   testWidgets('CruzallApp Init', (WidgetTester tester) async {

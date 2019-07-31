@@ -20,6 +20,8 @@ import 'package:cruzall/app.dart';
 import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
 
+String assetPath(String asset) => 'assets/$asset';
+
 void setClipboardText(BuildContext context, String text) =>
     Clipboard.setData(ClipboardData(text: text)).then((result) =>
         Scaffold.of(context).showSnackBar(
@@ -43,8 +45,8 @@ void main() async {
 
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzawl appState = Cruzawl(launchUrl, setClipboardText, databaseFactoryIo,
-      await preferences.load(), dataDir,
+  Cruzawl appState = Cruzawl(assetPath, launchUrl, setClipboardText,
+      databaseFactoryIo, await preferences.load(), dataDir,
       packageInfo: PackageInfo(
           info.appName, info.packageName, info.version, info.buildNumber),
       isTrustFall: isTrustFall);
