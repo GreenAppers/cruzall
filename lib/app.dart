@@ -10,17 +10,12 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
-import 'package:cruzall/cruzawl-ui/address.dart';
-import 'package:cruzall/cruzawl-ui/block.dart';
-import 'package:cruzall/cruzawl-ui/cruzbase.dart';
 import 'package:cruzall/cruzawl-ui/localization.dart';
 import 'package:cruzall/cruzawl-ui/model.dart';
-import 'package:cruzall/cruzawl-ui/network.dart';
+import 'package:cruzall/cruzawl-ui/routes.dart';
 import 'package:cruzall/cruzawl-ui/settings.dart';
-import 'package:cruzall/cruzawl-ui/transaction.dart';
 import 'package:cruzall/cruzawl-ui/ui.dart';
 import 'package:cruzall/cruzawl-ui/wallet/add.dart';
-import 'package:cruzall/cruzawl-ui/wallet/address.dart';
 import 'package:cruzall/cruzawl-ui/wallet/send.dart';
 import 'package:cruzall/cruzawl-ui/wallet/settings.dart';
 import 'package:cruzall/cruzawl-ui/wallet/wallet.dart';
@@ -187,116 +182,19 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
           child: WalletWidget(wallet, appState),
         ),
         routes: <String, WidgetBuilder>{
-          '/settings': (BuildContext context) => SimpleScaffold(
-              CruzallSettings(walletSettings: true),
-              title: Localization.of(context).settings),
-          '/network': (BuildContext context) => ScopedModel(
-              model: appState.wallet,
-              child: ScopedModelDescendant<WalletModel>(
-                  builder: (context, child, model) {
-                final Localization locale = Localization.of(context);
-                return SimpleScaffold(CruzawlNetworkSettings(),
-                    title: locale
-                        .networkType(locale.ticker(wallet.currency.ticker)));
-              })),
           '/wallet': (BuildContext context) =>
               SimpleScaffold(WalletSettingsWidget(wallet), title: wallet.name),
           '/addWallet': (BuildContext context) => SimpleScaffold(
               AddWalletWidget(appState),
               title: Localization.of(context).newWallet),
-          '/addPeer': (BuildContext context) => SimpleScaffold(AddPeerWidget(),
-              title: Localization.of(context).newPeer),
           '/sendFrom': (BuildContext context) => SimpleScaffold(
               SendFromWidget(wallet),
               title: Localization.of(context).from),
           '/enableEncryption': (BuildContext context) => SimpleScaffold(
               EnableEncryptionWidget(),
               title: Localization.of(context).encryption),
-          '/support': (BuildContext context) => SimpleScaffold(CruzallSupport(),
-              title: Localization.of(context).support),
         },
-        onGenerateRoute: (settings) {
-          final PagePath page = parsePagePath(settings.name);
-          switch (page.page) {
-            case 'address':
-              return MaterialPageRoute(
-                  settings: settings,
-                  builder: (context) {
-                    if (page.arg == 'cruzbase')
-                      return CruzbaseWidget(
-                          wallet.currency, wallet.currency.network.tip);
-
-                    Address address = wallet.addresses[page.arg];
-                    return address != null
-                        ? SimpleScaffold(AddressWidget(wallet, address),
-                            title: Localization.of(context).address)
-                        : ScopedModel(
-                            model: appState.wallet,
-                            child: ScopedModelDescendant<WalletModel>(
-                                builder: (context, child, model) =>
-                                    ExternalAddressWidget(
-                                        wallet.currency, page.arg,
-                                        title: Localization.of(context)
-                                            .externalAddress)));
-                  });
-
-            case 'block':
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => ScopedModel(
-                  model: appState.wallet,
-                  child: ScopedModelDescendant<WalletModel>(
-                    builder: (context, child, model) =>
-                        BlockWidget(wallet.currency, blockId: page.arg),
-                  ),
-                ),
-              );
-            case 'height':
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => ScopedModel(
-                  model: appState.wallet,
-                  child: ScopedModelDescendant<WalletModel>(
-                    builder: (context, child, model) => BlockWidget(
-                        wallet.currency,
-                        blockHeight: int.parse(page.arg)),
-                  ),
-                ),
-              );
-            case 'tip':
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => ScopedModel(
-                  model: appState.wallet,
-                  child: ScopedModelDescendant<WalletModel>(
-                    builder: (context, child, model) =>
-                        BlockWidget(wallet.currency),
-                  ),
-                ),
-              );
-            case 'transaction':
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => ScopedModel(
-                  model: appState.wallet,
-                  child: ScopedModelDescendant<WalletModel>(
-                      builder: (context, child, model) {
-                    Transaction transaction = wallet.transactionIds[page.arg];
-                    return transaction != null
-                        ? TransactionWidget(wallet.currency,
-                            WalletTransactionInfo(wallet, transaction),
-                            transaction: transaction)
-                        : TransactionWidget(wallet.currency, TransactionInfo(),
-                            transactionIdText: page.arg,
-                            onHeightTap: (tx) =>
-                                appState.navigateToHeight(context, tx.height));
-                  }),
-                ),
-              );
-            default:
-              return null;
-          }
-        });
+        onGenerateRoute: CruzallRoutes(appState).onGenerateRoute);
   }
 
   @override
