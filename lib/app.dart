@@ -169,32 +169,32 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
     }
 
     final Wallet wallet = appState.wallet.wallet;
-    return MaterialApp(
-        theme: appState.theme.data,
-        debugShowCheckedModeBanner: false,
-        locale: appState.localeOverride,
-        supportedLocales: Localization.supportedLocales,
-        localizationsDelegates: localizationsDelegates,
-        onGenerateTitle: (BuildContext context) =>
-            Localization.of(context).title,
-        home: ScopedModel(
-          model: appState.wallet,
-          child: WalletWidget(wallet, appState),
-        ),
-        routes: <String, WidgetBuilder>{
-          '/wallet': (BuildContext context) =>
-              SimpleScaffold(WalletSettingsWidget(wallet), title: wallet.name),
-          '/addWallet': (BuildContext context) => SimpleScaffold(
-              AddWalletWidget(appState),
-              title: Localization.of(context).newWallet),
-          '/sendFrom': (BuildContext context) => SimpleScaffold(
-              SendFromWidget(wallet),
-              title: Localization.of(context).from),
-          '/enableEncryption': (BuildContext context) => SimpleScaffold(
-              EnableEncryptionWidget(),
-              title: Localization.of(context).encryption),
-        },
-        onGenerateRoute: CruzallRoutes(appState).onGenerateRoute);
+    return ScopedModel(
+        model: appState.wallet,
+        child: MaterialApp(
+            theme: appState.theme.data,
+            debugShowCheckedModeBanner: false,
+            locale: appState.localeOverride,
+            supportedLocales: Localization.supportedLocales,
+            localizationsDelegates: localizationsDelegates,
+            onGenerateTitle: (BuildContext context) =>
+                Localization.of(context).title,
+            home: WalletWidget(wallet, appState),
+            routes: <String, WidgetBuilder>{
+              '/wallet': (BuildContext context) => SimpleScaffold(
+                  WalletSettingsWidget(wallet),
+                  title: wallet.name),
+              '/addWallet': (BuildContext context) => SimpleScaffold(
+                  AddWalletWidget(appState),
+                  title: Localization.of(context).newWallet),
+              '/sendFrom': (BuildContext context) => SimpleScaffold(
+                  SendFromWidget(wallet),
+                  title: Localization.of(context).from),
+              '/enableEncryption': (BuildContext context) => SimpleScaffold(
+                  EnableEncryptionWidget(),
+                  title: Localization.of(context).encryption),
+            },
+            onGenerateRoute: CruzallRoutes(appState).onGenerateRoute));
   }
 
   @override
@@ -203,9 +203,13 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
     debugPrint('didChangeAppLifecycleState $state');
     if (state == AppLifecycleState.paused) {
       // went to Background
+      for (Currency currency in currencies)
+        currency.network.shutdown();
     }
     if (state == AppLifecycleState.resumed) {
       // came back to Foreground
+      for (Currency currency in currencies)
+        widget.appState.connectPeers(currency);
     }
   }
 }
