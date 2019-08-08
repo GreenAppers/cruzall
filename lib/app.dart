@@ -10,15 +10,15 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
-import 'package:cruzall/cruzawl-ui/localization.dart';
-import 'package:cruzall/cruzawl-ui/model.dart';
-import 'package:cruzall/cruzawl-ui/routes.dart';
-import 'package:cruzall/cruzawl-ui/settings.dart';
-import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/cruzawl-ui/wallet/add.dart';
-import 'package:cruzall/cruzawl-ui/wallet/send.dart';
-import 'package:cruzall/cruzawl-ui/wallet/settings.dart';
-import 'package:cruzall/cruzawl-ui/wallet/wallet.dart';
+import 'package:cruzall/cruzawl-ui/lib/localization.dart';
+import 'package:cruzall/cruzawl-ui/lib/model.dart';
+import 'package:cruzall/cruzawl-ui/lib/routes.dart';
+import 'package:cruzall/cruzawl-ui/lib/settings.dart';
+import 'package:cruzall/cruzawl-ui/lib/ui.dart';
+import 'package:cruzall/cruzawl-ui/lib/wallet/add.dart';
+import 'package:cruzall/cruzawl-ui/lib/wallet/send.dart';
+import 'package:cruzall/cruzawl-ui/lib/wallet/settings.dart';
+import 'package:cruzall/cruzawl-ui/lib/wallet/wallet.dart';
 
 class WelcomeToCruzallWidget extends StatelessWidget {
   @override
@@ -102,6 +102,8 @@ class CruzallApp extends StatefulWidget {
 }
 
 class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
+  DateTime paused;
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -202,14 +204,13 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     debugPrint('didChangeAppLifecycleState $state');
     if (state == AppLifecycleState.paused) {
-      // went to Background
-      for (Currency currency in currencies)
-        currency.network.shutdown();
+      paused = DateTime.now();
     }
-    if (state == AppLifecycleState.resumed) {
-      // came back to Foreground
-      for (Currency currency in currencies)
-        widget.appState.connectPeers(currency);
+    else if (state == AppLifecycleState.resumed) {
+      Duration pausedDuration = DateTime.now().difference(paused);
+      if (pausedDuration.inMinutes > 0)
+        for (Currency currency in currencies)
+          widget.appState.reconnectPeers(currency);
     }
   }
 }

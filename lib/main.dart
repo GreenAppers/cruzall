@@ -17,8 +17,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cruzawl/preferences.dart';
 
 import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/localization.dart';
-import 'package:cruzall/cruzawl-ui/model.dart';
+import 'package:cruzall/cruzawl-ui/lib/localization.dart';
+import 'package:cruzall/cruzawl-ui/lib/model.dart';
 
 String assetPath(String asset) => 'assets/$asset';
 
