@@ -17,10 +17,10 @@ import 'package:cruzawl/test.dart';
 import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/localization.dart';
-import 'package:cruzall/cruzawl-ui/model.dart';
-import 'package:cruzall/cruzawl-ui/ui.dart';
-import 'package:cruzall/cruzawl-ui/wallet/settings.dart';
+import 'package:cruzall/cruzawl-ui/lib/localization.dart';
+import 'package:cruzall/cruzawl-ui/lib/model.dart';
+import 'package:cruzall/cruzawl-ui/lib/ui.dart';
+import 'package:cruzall/cruzawl-ui/lib/wallet/settings.dart';
 
 void main() async {
   CruzawlPreferences preferences = CruzawlPreferences(
