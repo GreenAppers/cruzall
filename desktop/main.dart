@@ -42,7 +42,7 @@ void main() async {
     dataDirPath = appDataPath + '\\Cruzall';
   Directory dataDir = Directory(dataDirPath);
   PackageInfo info =
-      PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.0.14', '14');
+      PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.0.15', '15');
   debugPrint('main dataDir=${dataDir.path}');
 
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
