@@ -196,7 +196,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
                   EnableEncryptionWidget(),
                   title: Localization.of(context).encryption),
             },
-            onGenerateRoute: CruzallRoutes(appState).onGenerateRoute));
+            onGenerateRoute: CruzallRoutes(appState, includeWalletRoutes: true)
+                .onGenerateRoute));
   }
 
   @override
@@ -205,8 +206,7 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
     debugPrint('didChangeAppLifecycleState $state');
     if (state == AppLifecycleState.paused) {
       paused = DateTime.now();
-    }
-    else if (state == AppLifecycleState.resumed) {
+    } else if (state == AppLifecycleState.resumed) {
       Duration pausedDuration = DateTime.now().difference(paused);
       if (pausedDuration.inMinutes > 0)
         for (Currency currency in currencies)

@@ -12,7 +12,7 @@ dependencies:
   clippy: ^1.0.0
   cruzawl:
     path: ./cruzawl
-  json_annotation: ^2.4.0
+  json_annotation: ^3.0.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -23,7 +23,7 @@ dependencies:
   qr_flutter:
     git:
       url: git://github.com/lukef/qr.flutter.git
-  sembast: ^1.17.0
+  sembast: ^2.0.1
   scoped_model: ^1.0.1
   trust_fall: ^1.0.1
   tweetnacl:
@@ -36,7 +36,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   intl_translation: ^0.17.1
-  json_serializable: ^3.0.0
+  json_serializable: ^3.2.0
 
 flutter:
   uses-material-design: true
