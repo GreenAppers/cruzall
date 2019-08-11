@@ -14,6 +14,7 @@ import 'package:sembast/sembast_memory.dart';
 
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/test.dart';
+import 'package:cruzawl/util.dart';
 import 'package:cruzawl/wallet.dart';
 
 import 'package:cruzall/app.dart';
@@ -24,14 +25,13 @@ import 'package:cruzall/cruzawl-ui/lib/wallet/settings.dart';
 
 void main() async {
   CruzawlPreferences preferences = CruzawlPreferences(
-      await databaseFactoryMemoryFs.openDatabase('settings.db'),
-      testing: true);
+      await databaseFactoryMemoryFs.openDatabase('settings.db'));
   await preferences.load();
   preferences.networkEnabled = false;
   preferences.minimumReserveAddress = 3;
   SetClipboardText stringCallback = (BuildContext c, String x) {};
   Cruzawl appState = Cruzawl((String x) => x, stringCallback, stringCallback,
-      databaseFactoryMemoryFs, preferences, Directory(''));
+      databaseFactoryMemoryFs, preferences, '/', NullFileSystem());
 
   testWidgets('CruzallApp Init', (WidgetTester tester) async {
     expect(appState.wallets.length, 0);

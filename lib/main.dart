@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:package_info/package_info.dart' as packageinfo;
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
@@ -15,12 +16,18 @@ import 'package:trust_fall/trust_fall.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:cruzawl/preferences.dart';
+import 'package:cruzawl/util.dart';
 
 import 'package:cruzall/app.dart';
 import 'package:cruzall/cruzawl-ui/lib/localization.dart';
 import 'package:cruzall/cruzawl-ui/lib/model.dart';
 
 String assetPath(String asset) => 'assets/$asset';
+
+class IoFileSystem extends FileSystem {
+  Future<bool> exists(String filename) async => File(filename).exists();
+  Future<void> remove(String filename) async => File(filename).delete();
+}
 
 void setClipboardText(BuildContext context, String text) =>
     Clipboard.setData(ClipboardData(text: text)).then((result) =>
@@ -37,6 +44,26 @@ void launchUrl(BuildContext context, String url) async {
   }
 }
 
+Future<String> barcodeScan() async {
+  try {
+    String barcode = await BarcodeScanner.scan();
+    debugPrint('barcodeScan success: $barcode');
+    return barcode;
+  } on PlatformException catch (e) {
+    if (e.code == BarcodeScanner.CameraAccessDenied) {
+      debugPrint(
+          'barcodeScan failed: The user did not grant the camera permission.');
+    } else {
+      debugPrint('barcodeScan failed: $e');
+    }
+  } on FormatException {
+    debugPrint('barcodeScan aborted: User returned before scanning anything.');
+  } catch (e) {
+    debugPrint('barcodeScan failed with unknown error: $e');
+  }
+  return null;
+}
+
 void main() async {
   bool isTrustFall = await TrustFall.isTrustFall;
   packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
@@ -45,10 +72,17 @@ void main() async {
 
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzawl appState = Cruzawl(assetPath, launchUrl, setClipboardText,
-      databaseFactoryIo, await preferences.load(), dataDir,
+  Cruzawl appState = Cruzawl(
+      assetPath,
+      launchUrl,
+      setClipboardText,
+      databaseFactoryIo,
+      await preferences.load(),
+      dataDir.path + Platform.pathSeparator,
+      IoFileSystem(),
       packageInfo: PackageInfo(
           info.appName, info.packageName, info.version, info.buildNumber),
+      barcodeScan: barcodeScan,
       isTrustFall: isTrustFall);
 
   runApp(ScopedModel(

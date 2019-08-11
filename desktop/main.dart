@@ -19,6 +19,11 @@ import 'package:cruzall/cruzawl-ui/model.dart';
 
 String assetPath(String asset) => 'assets/$asset';
 
+class IoFileSystem extends FileSystem {
+  Future<bool> exists(String filename) async => File(filename).exists();
+  Future<void> remove(String filename) async => File(filename).delete();
+}
+
 void setClipboardText(BuildContext context, String text) async =>
     await clippy.write(text);
 
@@ -47,9 +52,16 @@ void main() async {
 
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
-  Cruzawl appState = Cruzawl(assetPath, launchUrl, setClipboardText,
-      databaseFactoryIo, await preferences.load(), dataDir,
-      packageInfo: info, isTrustFall: false);
+  Cruzawl appState = Cruzawl(
+      assetPath,
+      launchUrl,
+      setClipboardText,
+      databaseFactoryIo,
+      await preferences.load(),
+      dataDir.path + Platform.pathSeparator,
+      IoFileSystem(),
+      packageInfo: info,
+      isTrustFall: false);
 
   runApp(ScopedModel(
     model: appState,
