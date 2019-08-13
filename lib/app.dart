@@ -196,7 +196,8 @@ class CruzallAppState extends State<CruzallApp> with WidgetsBindingObserver {
                   EnableEncryptionWidget(),
                   title: Localization.of(context).encryption),
             },
-            onGenerateRoute: CruzallRoutes(appState, includeWalletRoutes: true)
+            onGenerateRoute: CruzallRoutes(appState,
+                    includeWalletRoutes: true, cruzbaseSearchBar: true)
                 .onGenerateRoute));
   }
 

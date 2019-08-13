@@ -1,5 +1,5 @@
 name: cruzall
-description: The original cruzbit wallet.
+description: Open-source HD wallet for CRUZ cryptocurrency.
 
 version: 1.0.15+15
 
@@ -25,10 +25,9 @@ dependencies:
       url: git://github.com/lukef/qr.flutter.git
   sembast: ^2.0.1
   scoped_model: ^1.0.1
+  syntax_highlighter: ^0.1.0
   trust_fall: ^1.0.1
-  tweetnacl:
-    git:
-      url: https://github.com/jspschool/tweetnacl-dart
+  tweetnacl: ^0.3.2
   url_launcher: ^5.1.1
 
 dev_dependencies:
