@@ -56,7 +56,7 @@ packages:
       name: build_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0"
+    version: "0.4.1+1"
   build_daemon:
     dependency: transitive
     description:
@@ -77,14 +77,14 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.2"
+    version: "1.6.5"
   build_runner_core:
     dependency: transitive
     description:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.6"
+    version: "3.0.9"
   built_collection:
     dependency: transitive
     description:
@@ -120,6 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0"
+  checked_yaml:
+    dependency: transitive
+    description:
+      name: checked_yaml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   clippy:
     dependency: "direct main"
     description:
@@ -154,7 +161,7 @@ packages:
       path: cruzawl
       relative: true
     source: path
-    version: "1.0.0+0"
+    version: "1.0.5+5"
   crypto:
     dependency: transitive
     description:
@@ -179,11 +186,9 @@ packages:
   ed25519_hd_key:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e780a161d7fbe9e04c9fe4593f0fa516e5012c4a
-      url: "https://github.com/GreenAppers/dart-ed25519-hd-key"
-    source: git
+      name: ed25519_hd_key
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.0.1"
   fixnum:
     dependency: transitive
@@ -297,14 +302,14 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.0"
+    version: "3.0.0"
   json_serializable:
     dependency: "direct dev"
     description:
       name: json_serializable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "3.2.0"
   kernel:
     dependency: transitive
     description:
@@ -353,7 +358,7 @@ packages:
       name: package_info
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0+4"
+    version: "0.4.0+6"
   package_resolver:
     dependency: transitive
     description:
@@ -367,14 +372,14 @@ packages:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.2"
+    version: "1.6.4"
   path_provider:
     dependency: "direct main"
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.1"
+    version: "1.2.0"
   pedantic:
     dependency: transitive
     description:
@@ -409,7 +414,7 @@ packages:
       name: pubspec_parse
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   qr:
     dependency: transitive
     description:
@@ -432,7 +437,7 @@ packages:
       name: quiver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.5"
   scoped_model:
     dependency: "direct main"
     description:
@@ -446,7 +451,7 @@ packages:
       name: sembast
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.17.2+2"
+    version: "2.0.1"
   shelf:
     dependency: transitive
     description:
@@ -507,7 +512,7 @@ packages:
       name: string_scanner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.5"
   synchronized:
     dependency: transitive
     description:
@@ -515,6 +520,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0+1"
+  syntax_highlighter:
+    dependency: "direct main"
+    description:
+      name: syntax_highlighter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   term_glyph:
     dependency: transitive
     description:
@@ -535,7 +547,7 @@ packages:
       name: timing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1+1"
+    version: "0.1.1+2"
   trust_fall:
     dependency: "direct main"
     description:
@@ -546,12 +558,10 @@ packages:
   tweetnacl:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "4976ae891fbb0b315b14446314f3d4e9011721c7"
-      url: "https://github.com/jspschool/tweetnacl-dart"
-    source: git
-    version: "0.3.1"
+      name: tweetnacl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.2"
   typed_data:
     dependency: transitive
     description:

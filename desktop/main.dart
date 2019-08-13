@@ -13,9 +13,10 @@ import 'package:sembast/sembast_io.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:cruzawl/preferences.dart';
+import 'package:cruzawl/util.dart';
 
 import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/model.dart';
+import 'package:cruzall/cruzawl-ui/lib/model.dart';
 
 String assetPath(String asset) => 'assets/$asset';
 
