@@ -64,24 +64,8 @@ Future<String> barcodeScan() async {
   return null;
 }
 
-/// Adapted from trust_fall.dart
-Future<bool> trustFall({bool checkCanMockLocation=true}) async {
-  final bool isJailBroken = await TrustFall.isJailBroken;
-  final bool isRealDevice = await TrustFall.isRealDevice;
-  final bool canMockLocation = checkCanMockLocation && await TrustFall.canMockLocation;
-  if (Platform.isAndroid) {
-    final bool isOnExternalStorage = await TrustFall.isOnExternalStorage;
-    return isJailBroken ||
-        canMockLocation ||
-        !isRealDevice ||
-        isOnExternalStorage;
-  } else {
-    return isJailBroken || canMockLocation || !isRealDevice;
-  }
-}
-
 void main() async {
-  bool isTrustFall = await trustFall(checkCanMockLocation: false);
+  bool isTrustFall = await TrustFall.isTrustFall;
   packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
   Directory dataDir = await getApplicationDocumentsDirectory();
   debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');

@@ -1,7 +1,7 @@
 name: cruzall
 description: Open-source HD wallet for CRUZ cryptocurrency.
 
-version: 1.0.15+15
+version: 1.0.16+16
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -26,7 +26,7 @@ dependencies:
   sembast: ^2.0.1
   scoped_model: ^1.0.1
   syntax_highlighter: ^0.1.0
-  trust_fall: ^1.0.1
+  trust_fall: 1.0.1
   tweetnacl: ^0.3.2
   url_launcher: ^5.1.1
 
