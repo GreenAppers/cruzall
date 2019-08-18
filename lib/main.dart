@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info/package_info.dart' as packageinfo;
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
@@ -71,7 +72,8 @@ void main() async {
   debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
 
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
-      .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
+      .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
+      () => NumberFormat.currency().currencyName);
   Cruzawl appState = Cruzawl(
       assetPath,
       launchUrl,

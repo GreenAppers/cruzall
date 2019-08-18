@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:clippy/server.dart' as clippy;
+import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -52,7 +53,8 @@ void main() async {
   debugPrint('main dataDir=${dataDir.path}');
 
   CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
-      .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'));
+      .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
+      () => NumberFormat.currency().currencyName);
   Cruzawl appState = Cruzawl(
       assetPath,
       launchUrl,
