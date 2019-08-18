@@ -4,7 +4,12 @@
 <dict>
 	<key>CFBundleLocalizations</key>
 	<array>
+		<string>cs</string>
+		<string>de</string>
 		<string>en</string>
+		<string>id</string>
+		<string>ja</string>
+		<string>ms</string>
 		<string>ru</string>
 		<string>zh_CN</string>
 	</array>

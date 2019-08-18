@@ -25,7 +25,7 @@ import 'package:cruzall/cruzawl-ui/lib/wallet/settings.dart';
 
 void main() async {
   CruzawlPreferences preferences = CruzawlPreferences(
-      await databaseFactoryMemoryFs.openDatabase('settings.db'));
+      await databaseFactoryMemoryFs.openDatabase('settings.db'), () => 'USD');
   await preferences.load();
   preferences.networkEnabled = false;
   preferences.minimumReserveAddress = 3;
