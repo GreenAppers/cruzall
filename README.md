@@ -9,6 +9,7 @@
 * 🤖 [Cruzall for Android](https://github.com/GreenAppers/cruzall-android) [![Build Status](https://travis-ci.org/GreenAppers/cruzall-android.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzall-android)
 * 🍏 [Cruzall for macOS](https://github.com/GreenAppers/cruzall-macos) [![Build Status](https://travis-ci.org/GreenAppers/cruzall-macos.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzall-macos)
 * Ⓜ  [Cruzall for Windows](https://github.com/GreenAppers/cruzall-windows) [![Build status](https://ci.appveyor.com/api/projects/status/4yvp2a2b412pyrca?svg=true)](https://ci.appveyor.com/project/GreenAppers/cruzall-windows)
+* 🐧 [Cruzall for Linux](https://github.com/GreenAppers/cruzall-linux) [![Build Status](https://travis-ci.org/GreenAppers/cruzall-linux.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzall-linux)
 * 🎯 Powered by [cruzawl](https://github.com/GreenAppers/cruzawl) [![Build Status](https://travis-ci.org/GreenAppers/cruzawl.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzawl) [documentation](https://pub.dev/documentation/cruzawl/latest/)
 * 🕊 And [cruzawl-ui](https://github.com/GreenAppers/cruzawl-ui) [![Build Status](https://travis-ci.org/GreenAppers/cruzawl-ui.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzawl-ui)
 
