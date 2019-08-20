@@ -6,6 +6,11 @@
 ## 1.0.18+18
 
 - Add preference for local currency.
-- Add total transcations to block chart.
+- Add total transactions to block chart.
 - Add translations for German, Czech, Indonesian, Malay, and Japanese.
+
+## 1.0.19+19
+
+- Make the default language English.
+- Fix copy & paste on Windows.
 
