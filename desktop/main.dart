@@ -26,6 +26,9 @@ class IoFileSystem extends FileSystem {
   Future<void> remove(String filename) async => File(filename).delete();
 }
 
+Future<String> getClipboardText() async =>
+    clippy.read();
+
 void setClipboardText(BuildContext context, String text) async =>
     await clippy.write(text);
 
@@ -59,6 +62,7 @@ void main() async {
       assetPath,
       launchUrl,
       setClipboardText,
+      getClipboardText,
       databaseFactoryIo,
       await preferences.load(),
       dataDir.path + Platform.pathSeparator,

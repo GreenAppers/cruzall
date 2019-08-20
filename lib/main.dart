@@ -35,6 +35,8 @@ void setClipboardText(BuildContext context, String text) =>
         Scaffold.of(context).showSnackBar(
             SnackBar(content: Text(Localization.of(context).copied))));
 
+Future<String> getClipboardText() async => 'unused';
+
 void launchUrl(BuildContext context, String url) async {
   debugPrint('Launching $url');
   if (await canLaunch(url)) {
@@ -78,6 +80,7 @@ void main() async {
       assetPath,
       launchUrl,
       setClipboardText,
+      getClipboardText,
       databaseFactoryIo,
       await preferences.load(),
       dataDir.path + Platform.pathSeparator,
