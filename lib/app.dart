@@ -10,10 +10,10 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cruzawl/currency.dart';
 import 'package:cruzawl/wallet.dart';
 
+import 'package:cruzall/cruzawl-ui/lib/explorer/settings.dart';
 import 'package:cruzall/cruzawl-ui/lib/localization.dart';
 import 'package:cruzall/cruzawl-ui/lib/model.dart';
 import 'package:cruzall/cruzawl-ui/lib/routes.dart';
-import 'package:cruzall/cruzawl-ui/lib/settings.dart';
 import 'package:cruzall/cruzawl-ui/lib/ui.dart';
 import 'package:cruzall/cruzawl-ui/lib/wallet/add.dart';
 import 'package:cruzall/cruzawl-ui/lib/wallet/send.dart';

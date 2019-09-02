@@ -16,6 +16,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:trust_fall/trust_fall.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:cruzawl/http.dart';
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/util.dart';
 
@@ -68,6 +69,7 @@ Future<String> barcodeScan() async {
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   bool isTrustFall = await TrustFall.isTrustFall;
   packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
   Directory dataDir = await getApplicationDocumentsDirectory();
@@ -88,6 +90,7 @@ void main() async {
       packageInfo: PackageInfo(
           info.appName, info.packageName, info.version, info.buildNumber),
       barcodeScan: barcodeScan,
+      httpClient: HttpClientImpl(),
       isTrustFall: isTrustFall);
 
   runApp(ScopedModel(

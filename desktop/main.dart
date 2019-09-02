@@ -13,6 +13,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:cruzawl/http.dart';
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/util.dart';
 
@@ -68,6 +69,7 @@ void main() async {
       dataDir.path + Platform.pathSeparator,
       IoFileSystem(),
       packageInfo: info,
+      httpClient: HttpClientImpl(),
       isTrustFall: false);
 
   runApp(ScopedModel(
