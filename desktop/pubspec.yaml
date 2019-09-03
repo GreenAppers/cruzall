@@ -1,7 +1,7 @@
 name: cruzall
 description: The original cruzbit wallet.
 
-version: 1.0.13+13
+version: 1.1.0+20
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

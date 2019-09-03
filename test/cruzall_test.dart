@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sembast/sembast_memory.dart';
 
+import 'package:cruzawl/http.dart';
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/test.dart';
 import 'package:cruzawl/util.dart';
@@ -30,8 +31,10 @@ void main() async {
   preferences.networkEnabled = false;
   preferences.minimumReserveAddress = 3;
   SetClipboardText stringCallback = (BuildContext c, String x) {};
+  TestHttpClient httpClient = TestHttpClient();
   Cruzawl appState = Cruzawl((String x) => x, stringCallback, stringCallback,
-      null, databaseFactoryMemoryFs, preferences, '/', NullFileSystem());
+      null, databaseFactoryMemoryFs, preferences, '/', NullFileSystem(),
+      httpClient: httpClient);
 
   testWidgets('CruzallApp Init', (WidgetTester tester) async {
     expect(appState.wallets.length, 0);
