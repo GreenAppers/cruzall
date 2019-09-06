@@ -40,6 +40,7 @@ before_install:
   - gem install coveralls-lcov
 
 script:
+  - mkdir coverage
   - cd cruzawl-ui
   - ${HOME}/flutter/bin/flutter test --coverage
   - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl-ui\/lib/g" > ../coverage/lcov.base.info
