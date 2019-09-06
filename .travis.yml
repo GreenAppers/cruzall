@@ -38,6 +38,7 @@ before_install:
   - ${HOME}/flutter/bin/flutter doctor -v
   - ${HOME}/flutter/bin/flutter packages get
   - gem install coveralls-lcov
+  - sudo apt-get install lcov
 
 script:
   - mkdir coverage

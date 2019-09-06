@@ -12,6 +12,8 @@ dependencies:
   clippy: ^1.0.0
   cruzawl:
     path: ./cruzawl
+  cruzawl_ui:
+    path: ./cruzawl-ui
   json_annotation: ^3.0.0
   flutter:
     sdk: flutter

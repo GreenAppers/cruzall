@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:clippy/server.dart' as clippy;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sembast/sembast_io.dart';
@@ -17,8 +18,9 @@ import 'package:cruzawl/http.dart';
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/util.dart';
 
-import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/lib/model.dart';
+import 'package:cruzawl_ui/localization.dart';
+import 'package:cruzawl_ui/model.dart';
+import 'package:cruzawl_ui/wallet/app.dart';
 
 String assetPath(String asset) => 'assets/$asset';
 
@@ -27,8 +29,7 @@ class IoFileSystem extends FileSystem {
   Future<void> remove(String filename) async => File(filename).delete();
 }
 
-Future<String> getClipboardText() async =>
-    clippy.read();
+Future<String> getClipboardText() async => clippy.read();
 
 void setClipboardText(BuildContext context, String text) async =>
     await clippy.write(text);
@@ -51,15 +52,17 @@ void main() async {
     dataDirPath = homePath + '/.cruzall';
   else if (appDataPath != null && appDataPath.length > 0)
     dataDirPath = appDataPath + '\\Cruzall';
-  Directory dataDir = Directory(dataDirPath);
-  PackageInfo info =
-      PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.1.0', '20');
+  final Directory dataDir = Directory(dataDirPath);
+  final PackageInfo info =
+      PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.1.1', '20');
   debugPrint('main dataDir=${dataDir.path}');
 
-  CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
-      .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
+  final CruzawlPreferences preferences = CruzawlPreferences(
+      await databaseFactoryIo
+          .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
       () => NumberFormat.currency().currencyName);
-  Cruzawl appState = Cruzawl(
+
+  final Cruzawl appState = Cruzawl(
       assetPath,
       launchUrl,
       setClipboardText,
@@ -72,8 +75,15 @@ void main() async {
       httpClient: HttpClientImpl(),
       isTrustFall: false);
 
+  final List<LocalizationsDelegate> localizationsDelegates =
+      <LocalizationsDelegate>[
+    LocalizationDelegate(),
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate
+  ];
+
   runApp(ScopedModel(
     model: appState,
-    child: CruzallApp(appState),
+    child: WalletApp(appState, localizationsDelegates),
   ));
 }
