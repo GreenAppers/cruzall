@@ -1,4 +1,11 @@
-os: linux
+dist: trusty
+language: android
+jdk: oraclejdk8
+
+licenses:
+  - android-sdk-preview-license-.+
+  - android-sdk-license-.+
+  - google-gdk-license-.+
 
 addons:
   apt:
@@ -7,20 +14,45 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++6
+      - fonts-noto
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-28.0.3
+    - build-tools-27.0.3
+    - android-27
+    - extra-android-m2repository
+    - extra-google-m2repository
+    - extra-google-android-support
 
 before_install:
   - echo $TRAVIS_OS_NAME
   - echo ${HOME}
   - echo ${TRAVIS_BUILD_DIR}
-  - git clone https://github.com/flutter/flutter.git -b stable --depth 1 ${HOME}/flutter
+  - echo "repo_token:" $COVERALLS_REPO_TOKEN > .coveralls.yml
+  - yes | sdkmanager "platforms;android-27"
+  - yes | sdkmanager ndk-bundle
+  - git clone https://github.com/flutter/flutter.git -b stable ${HOME}/flutter
   - ${HOME}/flutter/bin/flutter doctor -v
   - ${HOME}/flutter/bin/flutter packages get
+  - gem install coveralls-lcov
 
 script:
-  - ${HOME}/flutter/bin/flutter test
+  - cd cruzawl-ui
+  - ${HOME}/flutter/bin/flutter test --coverage
+  - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl-ui\/lib/g" > ../coverage/lcov.base.info
+  - cd ..
+  - ${HOME}/flutter/bin/flutter test --merge-coverage
 
 after_success:
   - echo "success"
+  - coveralls-lcov coverage/lcov.info
 
 after_failure:
   - echo "failure"
+
+env:
+  global:
+    secure: pYTTd92YkaKgPFbaaeJzjgIAFC3Vw08WNHke8TGFld8bpiZDLJHR/c3ryKbw07gTlypCHuQvLUQo2JW78ZqOG1edyAGk5WMyFOL6b8ehRWiZ/dx/ARY0f6b8EnkfCS2SaoSvQRhkL1WZbV5avuAMt1o9AjgV3ZlqMH0jfU7sfO5UKD0AzrPm/uMbQVQvy7tE6vvXf/BlyxefBLHH9xN9P6QOv9iMLf3MpBbWfwLhnpldMINvMkrjzhRVDWAQAVm1BjC9SUv4GmJL3bayZecqIK08CYRKci2La5rnadMNLJ380YlkiIl4ZhYMaI2KD8IcBGDGv4BHMPd8Y/VBgTK+tV0/PcjDnSIFywzWtnTbSzklYreOaHQQDHZvlCFEDyXz1sULv38WUf0UN6Ux3HRxmY/kdVEpJYProhYYpjFd0z5BHzCJp76nmf5HH5qpRc8h686Q4BaM3pXfHl3bmKMzFBXumFchGCtjr+gYyk0eA7D+WK6yi2uhLq5J1GfEYXVISBK3utr0Wo+/27ihN2YDjIfS1Zpd0N9E1C7HQt+aCUt/Wv3Jnd8ljvp+2REXA5+dz+ogebcV3aRoGGduxG4vmGNBgP6HZzjXmILkMM0dHfYIvcEybwrbXINK7fnXYoLwzk0Ilw9mcTQKyZBVNGrgCn1aqFKSUAImAhHZGQAmISk=

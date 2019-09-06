@@ -1,5 +1,7 @@
-# cruzall [![Build Status](https://travis-ci.org/GreenAppers/cruzall.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzall)
-<img src="assets/cruzbit.png" width=128 /> <img src="assets/icon.png" /><br/>🕊 Open-source HD wallet for 🤙CRUZ cryptocurrency.
+# cruzall [![Build Status](https://travis-ci.org/GreenAppers/cruzall.svg?branch=master)](https://travis-ci.org/GreenAppers/cruzall) [![Coverage Status](https://coveralls.io/repos/github/GreenAppers/cruzall/badge.svg?branch=master)](https://coveralls.io/github/GreenAppers/cruzall?branch=master)
+<img src="assets/cruzbit.png" width=128 /> <img src="assets/icon.png" />
+
+🕊 Open-source HD wallet for 🤙CRUZ cryptocurrency.
 
 [See website](https://www.greenappers.com/cruzall)
 

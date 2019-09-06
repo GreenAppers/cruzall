@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info/package_info.dart' as packageinfo;
 import 'package:path_provider/path_provider.dart';
@@ -20,9 +21,9 @@ import 'package:cruzawl/http.dart';
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/util.dart';
 
-import 'package:cruzall/app.dart';
-import 'package:cruzall/cruzawl-ui/lib/localization.dart';
-import 'package:cruzall/cruzawl-ui/lib/model.dart';
+import 'package:cruzawl_ui/localization.dart';
+import 'package:cruzawl_ui/model.dart';
+import 'package:cruzawl_ui/wallet/app.dart';
 
 String assetPath(String asset) => 'assets/$asset';
 
@@ -70,15 +71,16 @@ Future<String> barcodeScan() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  bool isTrustFall = await TrustFall.isTrustFall;
-  packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
-  Directory dataDir = await getApplicationDocumentsDirectory();
+  final bool isTrustFall = await TrustFall.isTrustFall;
+  final packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
+  final Directory dataDir = await getApplicationDocumentsDirectory();
   debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
 
-  CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
+  final CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
       .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
       () => NumberFormat.currency().currencyName);
-  Cruzawl appState = Cruzawl(
+
+  final Cruzawl appState = Cruzawl(
       assetPath,
       launchUrl,
       setClipboardText,
@@ -93,8 +95,14 @@ void main() async {
       httpClient: HttpClientImpl(),
       isTrustFall: isTrustFall);
 
+  final List<LocalizationsDelegate> localizationsDelegates = <LocalizationsDelegate>[
+    LocalizationDelegate(),
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate
+  ];
+
   runApp(ScopedModel(
     model: appState,
-    child: CruzallApp(appState),
+    child: WalletApp(appState, localizationsDelegates),
   ));
 }

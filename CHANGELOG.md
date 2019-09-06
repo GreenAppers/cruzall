@@ -14,3 +14,12 @@
 - Make the default language English.
 - Fix copy & paste on Windows.
 
+## 1.1.0
+
+- Add Translations for Spanish and Korean.
+
+## 1.1.1
+
+- Add new logo and color scheme.
+- Automate screenshots.
+
