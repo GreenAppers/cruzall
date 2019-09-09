@@ -35,12 +35,12 @@ before_install:
   - yes | sdkmanager "platforms;android-27"
   - yes | sdkmanager ndk-bundle
   - git clone https://github.com/flutter/flutter.git -b stable ${HOME}/flutter
-  - ${HOME}/flutter/bin/flutter doctor -v
-  - ${HOME}/flutter/bin/flutter packages get
-  - ${HOME}/flutter/bin/flutter pub install coverage
+  - export PATH=$PATH:${HOME}/flutter/bin:${HOME}/flutter/bin/cache/dart-sdk/bin
+  - flutter doctor -v
+  - flutter packages get
+  - flutter pub global activate coverage
   - gem install coveralls-lcov
   - sudo apt-get install lcov
-  - export PATH=$PATH:${HOME}/flutter/bin/cache/dart-sdk/bin
 
 script:
   - mkdir coverage
@@ -49,10 +49,10 @@ script:
   - ./test-coverage.sh
   - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl\/lib/g" > ../cruzawl-ui/coverage/lcov.base.info
   - cd ../cruzawl-ui
-  - ${HOME}/flutter/bin/flutter test --merge-coverage
+  - flutter test --merge-coverage
   - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl-ui\/lib/g" > ../coverage/lcov.base.info
   - cd ..
-  - ${HOME}/flutter/bin/flutter test --merge-coverage
+  - flutter test --merge-coverage
 
 after_success:
   - echo "success"
