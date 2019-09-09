@@ -39,9 +39,10 @@ before_install:
   - ${HOME}/flutter/bin/flutter packages get
   - gem install coveralls-lcov
   - sudo apt-get install lcov
+  - export PATH=$PATH:${HOME}/flutter/bin/cache/dart-sdk/bin
+  - pub install coverage
 
 script:
-  - export PATH=$PATH:${HOME}/flutter/bin/cache/dart-sdk/bin
   - mkdir coverage
   - mkdir cruzawl-ui/coverage
   - cd cruzawl
