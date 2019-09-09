@@ -40,7 +40,7 @@ before_install:
   - gem install coveralls-lcov
   - sudo apt-get install lcov
   - export PATH=$PATH:${HOME}/flutter/bin/cache/dart-sdk/bin
-  - pub install coverage
+  - flutter pub install coverage
 
 script:
   - mkdir coverage
