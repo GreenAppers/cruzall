@@ -37,10 +37,10 @@ before_install:
   - git clone https://github.com/flutter/flutter.git -b stable ${HOME}/flutter
   - ${HOME}/flutter/bin/flutter doctor -v
   - ${HOME}/flutter/bin/flutter packages get
+  - ${HOME}/flutter/bin/flutter pub install coverage
   - gem install coveralls-lcov
   - sudo apt-get install lcov
   - export PATH=$PATH:${HOME}/flutter/bin/cache/dart-sdk/bin
-  - flutter pub install coverage
 
 script:
   - mkdir coverage
