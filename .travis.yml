@@ -46,6 +46,7 @@ script:
   - mkdir coverage
   - mkdir cruzawl-ui/coverage
   - cd cruzawl
+  - flutter packages get
   - ./test-coverage.sh
   - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl\/lib/g" > ../cruzawl-ui/coverage/lcov.base.info
   - cd ../cruzawl-ui
