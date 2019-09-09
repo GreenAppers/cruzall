@@ -41,6 +41,7 @@ before_install:
   - sudo apt-get install lcov
 
 script:
+  - export PATH=$PATH:${HOME}/flutter/bin/cache/dart-sdk/bin
   - mkdir coverage
   - mkdir cruzawl-ui/coverage
   - cd cruzawl
