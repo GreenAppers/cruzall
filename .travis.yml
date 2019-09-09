@@ -42,8 +42,12 @@ before_install:
 
 script:
   - mkdir coverage
-  - cd cruzawl-ui
-  - ${HOME}/flutter/bin/flutter test --coverage
+  - mkdir cruzawl-ui/coverage
+  - cd cruzawl
+  - ./test-coverage.sh
+  - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl\/lib/g" > ../cruzawl-ui/coverage/lcov.base.info
+  - cd ../cruzawl-ui
+  - ${HOME}/flutter/bin/flutter test --merge-coverage
   - cat coverage/lcov.info | sed "s/^SF:lib/SF:cruzawl-ui\/lib/g" > ../coverage/lcov.base.info
   - cd ..
   - ${HOME}/flutter/bin/flutter test --merge-coverage

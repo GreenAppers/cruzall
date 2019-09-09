@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:trust_fall/trust_fall.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:cruzawl/http.dart';
@@ -72,12 +73,14 @@ Future<String> barcodeScan() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final bool isTrustFall = await TrustFall.isTrustFall;
-  final packageinfo.PackageInfo info = await packageinfo.PackageInfo.fromPlatform();
+  final packageinfo.PackageInfo info =
+      await packageinfo.PackageInfo.fromPlatform();
   final Directory dataDir = await getApplicationDocumentsDirectory();
   debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
 
-  final CruzawlPreferences preferences = CruzawlPreferences(await databaseFactoryIo
-      .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
+  final CruzawlPreferences preferences = CruzawlPreferences(
+      await databaseFactoryIo
+          .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
       () => NumberFormat.currency().currencyName);
 
   final Cruzawl appState = Cruzawl(
@@ -95,7 +98,8 @@ void main() async {
       httpClient: HttpClientImpl(),
       isTrustFall: isTrustFall);
 
-  final List<LocalizationsDelegate> localizationsDelegates = <LocalizationsDelegate>[
+  final List<LocalizationsDelegate> localizationsDelegates =
+      <LocalizationsDelegate>[
     LocalizationDelegate(),
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate
@@ -103,6 +107,7 @@ void main() async {
 
   runApp(ScopedModel(
     model: appState,
-    child: WalletApp(appState, localizationsDelegates),
+    child: WalletApp(appState, localizationsDelegates,
+        () async => await getInitialLink(), getLinksStream()),
   ));
 }

@@ -60,5 +60,19 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission is required for barcode scanning.</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLName</key>
+      <string>com.greenappers.cruzall.ios</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>cruzbit</string>
+        <string>cruzall</string>
+      </array>
+    </dict>
+  </array>
 </dict>
 </plist>
