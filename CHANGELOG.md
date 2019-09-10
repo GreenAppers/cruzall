@@ -20,6 +20,8 @@
 
 ## 1.1.1
 
-- Add new logo and color scheme.
+- New logo and color scheme.
+- Add cruzbit:// and https//cruzbase.com link handling.
+- Add Jdenticon address icons.
 - Automate screenshots.
 

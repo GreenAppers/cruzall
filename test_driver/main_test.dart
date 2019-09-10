@@ -1,56 +1,68 @@
-// This is a basic Flutter Driver test for the application. A Flutter Driver
-// test is an end-to-end test that "drives" your application from another
-// process or even from another computer. If you are familiar with
-// Selenium/WebDriver for web, Espresso for Android or UI Automation for iOS,
-// this is simply Flutter's version of that.
+// Copyright 2019 cruzawl developers
+// Use of this source code is governed by a MIT-style license that can be found in the LICENSE file.
+
+import 'dart:convert' as c;
+import 'dart:io';
 
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:screenshots/screenshots.dart';
 import 'package:test/test.dart';
-import 'dart:convert' as c;
 
 void main() {
-  group('end-to-end test', () {
+  group('Screenshots', () {
     FlutterDriver driver;
-    Map localizations;
     final config = Config();
+    Map locale;
 
     setUpAll(() async {
-      // Connect to a running Flutter application instance.
       driver = await FlutterDriver.connect();
-      // get the localizations for the current locale
-      localizations = c.jsonDecode(await driver.requestData(null));
-      print('localizations=$localizations');
+      locale = c.jsonDecode(await driver.requestData(null));
     });
 
     tearDownAll(() async {
       if (driver != null) await driver.close();
     });
 
-    test('tap on the floating action button; verify counter', () async {
-    /*
-      // Finds the floating action button (fab) to tap on
-      SerializableFinder fab =
-          find.byTooltip(localizations['counterIncrementButtonTooltip']);
+    test('Driver health', () async {
+      Health health = await driver.checkHealth();
+      print(health.status);
+      sleep(Duration(seconds: 5));
+      //await driver.waitUntilFirstFrameRasterized();
+    });
 
-      // Wait for the floating action button to appear
-      await driver.waitFor(fab);
+    test('Create HD wallet', () async {
+      SerializableFinder createWalletButton =
+          find.byType('RaisedGradientButton');
+      await driver.waitFor(createWalletButton);
+      await driver.tap(createWalletButton);
+      sleep(Duration(seconds: 5));
+    });
 
-      // take screenshot before number is incremented
-      await screenshot(driver, config, '0');
+    test('Screenshot block chart', () async {
+      String height = await driver.requestData('height');
+      print('Got height = $height');
+      SerializableFinder blockChartButton = find.text(height);
+      await driver.waitFor(blockChartButton);
+      await driver.tap(blockChartButton);
+      sleep(Duration(seconds: 5));
+      await screenshot(driver, config, 'screenshot3');
+      await driver.tap(find.pageBack());
+    });
 
-      // Tap on the fab
-      await driver.tap(fab);
+    test('Screenshot send screen', () async {
+      SerializableFinder sendTabButton = find.text(locale['send']);
+      await driver.waitFor(sendTabButton);
+      await driver.tap(sendTabButton);
+      await driver.waitFor(find.text(locale['payTo']));
+      await screenshot(driver, config, 'screenshot1');
+    });
 
-      // Wait for text to change to the desired value
-      await driver.waitFor(find.text('1'));
-
-      // take screenshot after number is incremented
-      await screenshot(driver, config, '1');
-
-      // increase timeout from 30 seconds for testing
-      // on slow running emulators in cloud
-      */
-    }, timeout: Timeout(Duration(seconds: 120)));
+    test('Screenshot receive screen', () async {
+      SerializableFinder receiveTabButton = find.text(locale['receive']);
+      await driver.waitFor(receiveTabButton);
+      await driver.tap(receiveTabButton);
+      await driver.waitFor(find.text(locale['generateNewAddress']));
+      await screenshot(driver, config, 'screenshot2');
+    });
   });
 }

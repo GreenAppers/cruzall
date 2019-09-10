@@ -1,7 +1,7 @@
 name: cruzall
 description: Open-source HD wallet for CRUZ cryptocurrency.
 
-version: 1.1.0+20
+version: 1.1.1+21
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -14,11 +14,13 @@ dependencies:
     path: ./cruzawl
   cruzawl_ui:
     path: ./cruzawl-ui
+  jdenticon_dart: ^1.2.1+1
   json_annotation: ^3.0.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_svg: ^0.14.1
   gradient_app_bar: ^0.0.1
   package_info: 0.4.0+6
   path_provider: ^1.2.0

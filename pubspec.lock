@@ -234,7 +234,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_svg:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_svg
       url: "https://pub.dartlang.org"
@@ -335,7 +335,7 @@ packages:
     source: hosted
     version: "0.3.3"
   jdenticon_dart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: jdenticon_dart
       url: "https://pub.dartlang.org"

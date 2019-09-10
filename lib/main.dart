@@ -9,7 +9,9 @@ import 'package:flutter/services.dart';
 
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:package_info/package_info.dart' as packageinfo;
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
@@ -72,7 +74,10 @@ Future<String> barcodeScan() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final bool isTrustFall = await TrustFall.isTrustFall;
+  await runCruzallApp(await TrustFall.isTrustFall);
+}
+
+void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
   final packageinfo.PackageInfo info =
       await packageinfo.PackageInfo.fromPlatform();
   final Directory dataDir = await getApplicationDocumentsDirectory();
@@ -96,7 +101,11 @@ void main() async {
           info.appName, info.packageName, info.version, info.buildNumber),
       barcodeScan: barcodeScan,
       httpClient: HttpClientImpl(),
-      isTrustFall: isTrustFall);
+      isTrustFall: isTrustFall,
+      createIconImage: (x) => SvgPicture.string(Jdenticon.toSvg(x),
+          fit: BoxFit.contain, height: 64, width: 64));
+
+  if (appCreated != null) appCreated(appState);
 
   final List<LocalizationsDelegate> localizationsDelegates =
       <LocalizationsDelegate>[
