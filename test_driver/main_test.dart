@@ -12,11 +12,11 @@ void main() {
   group('Screenshots', () {
     FlutterDriver driver;
     final config = Config();
-    Map locale;
+    Map l10n;
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
-      locale = c.jsonDecode(await driver.requestData(null));
+      l10n = c.jsonDecode(await driver.requestData(null));
     });
 
     tearDownAll(() async {
@@ -26,8 +26,8 @@ void main() {
     test('Driver health', () async {
       Health health = await driver.checkHealth();
       print(health.status);
-      sleep(Duration(seconds: 5));
-      //await driver.waitUntilFirstFrameRasterized();
+      await driver.waitUntilFirstFrameRasterized();
+      await driver.requestData('height');
     });
 
     test('Create HD wallet', () async {
@@ -35,34 +35,34 @@ void main() {
           find.byType('RaisedGradientButton');
       await driver.waitFor(createWalletButton);
       await driver.tap(createWalletButton);
-      sleep(Duration(seconds: 5));
-    });
-
-    test('Screenshot block chart', () async {
-      String height = await driver.requestData('height');
-      print('Got height = $height');
-      SerializableFinder blockChartButton = find.text(height);
-      await driver.waitFor(blockChartButton);
-      await driver.tap(blockChartButton);
-      sleep(Duration(seconds: 5));
-      await screenshot(driver, config, 'screenshot3');
-      await driver.tap(find.pageBack());
+      await driver.waitFor(find.text(l10n['balance']));
+      await driver.waitFor(find.byValueKey('chartLink'));
     });
 
     test('Screenshot send screen', () async {
-      SerializableFinder sendTabButton = find.text(locale['send']);
-      await driver.waitFor(sendTabButton);
+      SerializableFinder sendTabButton = find.text(l10n['send']);
       await driver.tap(sendTabButton);
-      await driver.waitFor(find.text(locale['payTo']));
+      await driver.waitFor(find.text(l10n['payTo']));
       await screenshot(driver, config, 'screenshot1');
     });
 
     test('Screenshot receive screen', () async {
-      SerializableFinder receiveTabButton = find.text(locale['receive']);
+      SerializableFinder receiveTabButton = find.text(l10n['receive']);
       await driver.waitFor(receiveTabButton);
       await driver.tap(receiveTabButton);
-      await driver.waitFor(find.text(locale['generateNewAddress']));
+      await driver.waitFor(find.text(l10n['generateNewAddress']));
       await screenshot(driver, config, 'screenshot2');
     });
+
+    test('Screenshot block chart', () async {
+      SerializableFinder balanceTabButton = find.text(l10n['balance']);
+      await driver.waitFor(balanceTabButton);
+      await driver.tap(balanceTabButton);
+      SerializableFinder blockChartButton = find.byValueKey('chartLink');
+      await driver.waitFor(blockChartButton);
+      await driver.tap(blockChartButton);
+      await driver.waitFor(find.byValueKey('marketCap'));
+      await screenshot(driver, config, 'screenshot3');
+    }, timeout: Timeout(Duration(seconds: 120)));
   });
 }

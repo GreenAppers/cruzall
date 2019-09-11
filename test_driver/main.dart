@@ -9,29 +9,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:intl/intl.dart';
 
+import 'package:cruzall/main.dart' as cruzall;
+import 'package:cruzawl/currency.dart';
+import 'package:cruzawl/network.dart';
 import 'package:cruzawl_ui/localization.dart';
 import 'package:cruzawl_ui/model.dart';
-import 'package:cruzall/main.dart' as cruzall;
 
 void main() async {
+  Currency currency = cruz;
   Cruzawl appState;
   final Completer<Cruzawl> appCreated = Completer<Cruzawl>();
   final DataHandler handler = (String query) async {
     if (appState == null) appState = await appCreated.future;
     switch (query) {
       case 'height':
-        return Future.value(appState.network.tipHeight.toString());
+        PeerNetwork network = findPeerNetworkForCurrency(appState.networks, currency);
+        Peer peer = await network.getPeer();
+        return Future.value(network.tipHeight.toString());
 
       default:
-        final locale =
+        final l10n =
             await Localization.load(Locale(ui.window.locale.languageCode));
         return Future.value(c.jsonEncode({
+          'balance': l10n.balance,
+          'blocks': l10n.blocks,
+          'currency': currency.toJson(),
           'locale': Intl.defaultLocale,
-          'blocks': locale.blocks,
-          'receive': locale.receive,
-          'send': locale.send,
-          'payTo': locale.payTo,
-          'generateNewAddress': locale.generateNewAddress,
+          'generateNewAddress': l10n.generateNewAddress,
+          'payTo': l10n.payTo,
+          'receive': l10n.receive,
+          'send': l10n.send,
         }));
     }
   };

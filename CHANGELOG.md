@@ -20,8 +20,10 @@
 
 ## 1.1.1
 
-- New logo and color scheme.
-- Add cruzbit:// and https//cruzbase.com link handling.
+- Add Contacts.
 - Add Jdenticon address icons.
+- Add cruzbit:// and https//cruzbase.com link handling.
+- New logo and color scheme.
+- Upgrade to Flutter 1.9.
 - Automate screenshots.
 
