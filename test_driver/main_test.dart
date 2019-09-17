@@ -1,8 +1,7 @@
 // Copyright 2019 cruzawl developers
 // Use of this source code is governed by a MIT-style license that can be found in the LICENSE file.
 
-import 'dart:convert' as c;
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:screenshots/screenshots.dart';
@@ -16,7 +15,7 @@ void main() {
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
-      l10n = c.jsonDecode(await driver.requestData(null));
+      l10n = jsonDecode(await driver.requestData(null));
     });
 
     tearDownAll(() async {

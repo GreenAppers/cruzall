@@ -8,31 +8,22 @@ environment:
 
 dependencies:
   barcode_scan: ^1.0.0
-  charts_flutter: ^0.6.0
-  clippy: ^1.0.0
   cruzawl:
     path: ./cruzawl
   cruzawl_ui:
     path: ./cruzawl-ui
   jdenticon_dart: ^1.2.1+1
-  json_annotation: ^3.0.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^0.14.1
-  gradient_app_bar: ^0.0.1
   package_info: 0.4.0+6
   path_provider: ^1.2.0
-  qr_flutter:
-    git:
-      url: git://github.com/lukef/qr.flutter.git
+  pedantic: ^1.8.0
   sembast: ^2.0.1
   scoped_model: ^1.0.1
-  syntax_highlighter: ^0.1.0
   trust_fall: 1.0.1
-  tuple: ^1.0.2
-  tweetnacl: ^0.3.2
   uni_links: ^0.2.0
   url_launcher: ^5.1.1
 
@@ -42,8 +33,6 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  intl_translation: ^0.17.1
-  json_serializable: ^3.2.0
   screenshots: ^2.0.0
   test: any
 
@@ -67,20 +56,5 @@ flutter:
         - asset: fonts/MartelSans-ExtraBold.ttf
           weight: 800
         - asset: fonts/MartelSans-Black.ttf
-          weight: 900
-
-    - family: Roboto
-      fonts:
-        - asset: desktop/fonts/Roboto/Roboto-Thin.ttf
-          weight: 100
-        - asset: desktop/fonts/Roboto/Roboto-Light.ttf
-          weight: 300
-        - asset: desktop/fonts/Roboto/Roboto-Regular.ttf
-          weight: 400
-        - asset: desktop/fonts/Roboto/Roboto-Medium.ttf
-          weight: 500
-        - asset: desktop/fonts/Roboto/Roboto-Bold.ttf
-          weight: 700
-        - asset: desktop/fonts/Roboto/Roboto-Black.ttf
           weight: 900
 

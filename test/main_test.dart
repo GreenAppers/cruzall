@@ -6,5 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cruzall/main.dart' as cruzall;
 
 void main() {
-  test('empty test', () {});
+  test('main test', () {
+    expect(cruzall.assetPath('foo.png'), 'assets/foo.png');
+    expect(cruzall.getClipboardText(), completion(equals('unused')));
+  });
 }

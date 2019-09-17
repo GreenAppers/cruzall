@@ -14,14 +14,15 @@ import 'package:intl/intl.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:package_info/package_info.dart' as packageinfo;
 import 'package:path_provider/path_provider.dart';
-import 'package:sembast/sembast_io.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:sembast/sembast_io.dart';
 import 'package:trust_fall/trust_fall.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:cruzawl/http.dart';
 import 'package:cruzawl/preferences.dart';
+import 'package:cruzawl/sembast.dart';
 import 'package:cruzawl/util.dart';
 
 import 'package:cruzawl_ui/localization.dart';
@@ -54,7 +55,7 @@ void launchUrl(BuildContext context, String url) async {
 
 Future<String> barcodeScan() async {
   try {
-    String barcode = await BarcodeScanner.scan();
+    final String barcode = await BarcodeScanner.scan();
     debugPrint('barcodeScan success: $barcode');
     return barcode;
   } on PlatformException catch (e) {
@@ -72,11 +73,6 @@ Future<String> barcodeScan() async {
   return null;
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await runCruzallApp(await TrustFall.isTrustFall);
-}
-
 void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
   final packageinfo.PackageInfo info =
       await packageinfo.PackageInfo.fromPlatform();
@@ -84,9 +80,10 @@ void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
   debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
 
   final CruzawlPreferences preferences = CruzawlPreferences(
-      await databaseFactoryIo
-          .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db'),
+      SembastPreferences(await databaseFactoryIo
+          .openDatabase(dataDir.path + Platform.pathSeparator + 'settings.db')),
       () => NumberFormat.currency().currencyName);
+  await preferences.storage.load();
 
   final Cruzawl appState = Cruzawl(
       assetPath,
@@ -94,7 +91,7 @@ void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
       setClipboardText,
       getClipboardText,
       databaseFactoryIo,
-      await preferences.load(),
+      preferences,
       dataDir.path + Platform.pathSeparator,
       IoFileSystem(),
       packageInfo: PackageInfo(
@@ -119,4 +116,9 @@ void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
     child: WalletApp(appState, localizationsDelegates,
         () async => await getInitialLink(), getLinksStream()),
   ));
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await runCruzallApp(await TrustFall.isTrustFall);
 }
