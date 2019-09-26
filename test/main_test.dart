@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cruzall/main.dart' as cruzall;
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('main test', () {
     expect(cruzall.assetPath('foo.png'), 'assets/foo.png');
     expect(cruzall.getClipboardText(), completion(equals('')));
