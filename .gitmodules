@@ -4,3 +4,6 @@
 [submodule "lib/cruzawl-ui"]
 	path = cruzawl-ui
 	url = https://github.com/GreenAppers/cruzawl-ui
+[submodule "desktop"]
+	path = desktop
+	url = https://github.com/GreenAppers/cruzall-desktop

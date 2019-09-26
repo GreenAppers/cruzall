@@ -16,6 +16,8 @@ PODS:
     - Flutter
   - url_launcher (0.0.1):
     - Flutter
+  - url_launcher_fde (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - barcode_scan (from `.symlinks/plugins/barcode_scan/ios`)
@@ -25,6 +27,7 @@ DEPENDENCIES:
   - trust_fall (from `.symlinks/plugins/trust_fall/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - url_launcher_fde (from `.symlinks/plugins/url_launcher_fde/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -46,6 +49,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/uni_links/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
+  url_launcher_fde:
+    :path: ".symlinks/plugins/url_launcher_fde/ios"
 
 SPEC CHECKSUMS:
   barcode_scan: 33f586d02270046fc6559135038b34b5754eaa4f
@@ -57,6 +62,7 @@ SPEC CHECKSUMS:
   trust_fall: 89fc4fbfe2ca9994ffa64185c6cc48225ca0204c
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher: 0067ddb8f10d36786672aa0722a21717dba3a298
+  url_launcher_fde: 57842a92168588f04dfa4a86edfe5756a6c13d5f
 
 PODFILE CHECKSUM: aff02bfeed411c636180d6812254b2daeea14d09
 

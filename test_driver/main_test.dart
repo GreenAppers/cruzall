@@ -35,7 +35,7 @@ void main() {
       await driver.waitFor(createWalletButton);
       await driver.tap(createWalletButton);
       await driver.waitFor(find.text(l10n['balance']));
-      await driver.waitFor(find.byValueKey('chartLink'));
+      await driver.waitFor(find.byType('HyperLinkWidget'));
     });
 
     test('Screenshot send screen', () async {
@@ -57,7 +57,7 @@ void main() {
       SerializableFinder balanceTabButton = find.text(l10n['balance']);
       await driver.waitFor(balanceTabButton);
       await driver.tap(balanceTabButton);
-      SerializableFinder blockChartButton = find.byValueKey('chartLink');
+      SerializableFinder blockChartButton = find.byType('HyperLinkWidget');
       await driver.waitFor(blockChartButton);
       await driver.tap(blockChartButton);
       await driver.waitFor(find.byValueKey('marketCap'));

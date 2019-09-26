@@ -738,6 +738,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.2"
+  url_launcher_fde:
+    dependency: "direct main"
+    description:
+      path: "desktop/plugins/flutter_plugins/url_launcher_fde"
+      relative: true
+    source: path
+    version: "0.0.1"
   vector_math:
     dependency: transitive
     description:

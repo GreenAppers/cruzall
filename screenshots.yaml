@@ -8,11 +8,13 @@ staging: /tmp/screenshots
 
 # A list of locales supported in app
 locales:
+  - ar-SA
   - cs-CZ
   - de-DE
   - en-US
   - es-ES
   - in-ID
+  - iw-IL
   - ja-JP
   - ko-KR
   - ms-SG

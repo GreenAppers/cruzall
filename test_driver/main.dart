@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert' as c;
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -23,14 +24,15 @@ void main() async {
     if (appState == null) appState = await appCreated.future;
     switch (query) {
       case 'height':
-        PeerNetwork network = findPeerNetworkForCurrency(appState.networks, currency);
+        PeerNetwork network =
+            findPeerNetworkForCurrency(appState.networks, currency);
         Peer peer = await network.getPeer();
         return Future.value(network.tipHeight.toString());
 
       default:
         final l10n =
             await Localization.load(Locale(ui.window.locale.languageCode));
-        return Future.value(c.jsonEncode({
+        return Future.value(jsonEncode({
           'balance': l10n.balance,
           'blocks': l10n.blocks,
           'currency': currency.toJson(),
@@ -48,5 +50,10 @@ void main() async {
   enableFlutterDriverExtension(handler: handler);
   WidgetsApp.debugAllowBannerOverride = false;
 
-  await cruzall.runCruzallApp(false, (app) => appCreated.complete(app));
+  final PackageInfo packageInfo = await cruzall.getPackageInfo(false);
+  final Directory dataDir = await cruzall.getDataDir(false);
+  final bool isTrustFall = false;
+
+  await cruzall.runCruzallApp(packageInfo, dataDir, false, isTrustFall,
+      (app) => appCreated.complete(app));
 }

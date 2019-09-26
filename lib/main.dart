@@ -36,12 +36,15 @@ class IoFileSystem extends FileSystem {
   Future<void> remove(String filename) async => File(filename).delete();
 }
 
+Future<String> getClipboardText() async {
+  ClipboardData data = await Clipboard.getData(Clipboard.kTextPlain);
+  return data == null ? '' : data.text;
+}
+
 void setClipboardText(BuildContext context, String text) =>
     Clipboard.setData(ClipboardData(text: text)).then((result) =>
         Scaffold.of(context).showSnackBar(
             SnackBar(content: Text(Localization.of(context).copied))));
-
-Future<String> getClipboardText() async => 'unused';
 
 void launchUrl(BuildContext context, String url) async {
   debugPrint('Launching $url');
@@ -73,11 +76,36 @@ Future<String> barcodeScan() async {
   return null;
 }
 
-void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
-  final packageinfo.PackageInfo info =
-      await packageinfo.PackageInfo.fromPlatform();
-  final Directory dataDir = await getApplicationDocumentsDirectory();
-  debugPrint('main trustFall=$isTrustFall, dataDir=${dataDir.path}');
+Future<PackageInfo> getPackageInfo(bool havePackageInfo) async {
+  if (havePackageInfo) {
+    final packageinfo.PackageInfo info =
+        await packageinfo.PackageInfo.fromPlatform();
+    return PackageInfo(
+        info.appName, info.packageName, info.version, info.buildNumber);
+  } else {
+    return PackageInfo('Cruzall', 'com.greenappers.cruzall', '1.1.2', '22');
+  }
+}
+
+Future<Directory> getDataDir(bool isDesktop) async {
+  if (isDesktop) {
+    String homePath = Platform.environment['HOME'], dataDirPath = '';
+    String appDataPath = Platform.environment['LOCALAPPDATA'];
+    if (homePath != null && homePath.isNotEmpty) {
+      dataDirPath = homePath + '/.cruzall';
+    } else if (appDataPath != null && appDataPath.isNotEmpty) {
+      dataDirPath = appDataPath + '\\Cruzall';
+    }
+    return Directory(dataDirPath);
+  } else {
+    return await getApplicationDocumentsDirectory();
+  }
+}
+
+void runCruzallApp(PackageInfo packageInfo, Directory dataDir, bool isDesktop,
+    bool isTrustFall,
+    [CruzawlCallback appCreated]) async {
+  debugPrint('runCruzallApp trustFall=$isTrustFall, dataDir=${dataDir.path}');
 
   final CruzawlPreferences preferences = CruzawlPreferences(
       SembastPreferences(await databaseFactoryIo
@@ -94,9 +122,8 @@ void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
       preferences,
       dataDir.path + Platform.pathSeparator,
       IoFileSystem(),
-      packageInfo: PackageInfo(
-          info.appName, info.packageName, info.version, info.buildNumber),
-      barcodeScan: barcodeScan,
+      packageInfo: packageInfo,
+      barcodeScan: isDesktop ? null : barcodeScan,
       httpClient: HttpClientImpl(),
       isTrustFall: isTrustFall,
       createIconImage: (x) => SvgPicture.string(Jdenticon.toSvg(x),
@@ -111,14 +138,26 @@ void runCruzallApp(bool isTrustFall, [CruzawlCallback appCreated]) async {
     GlobalWidgetsLocalizations.delegate
   ];
 
+  VoidCallback getInitLink =
+      isDesktop ? null : () async => await getInitialLink();
+  Stream<String> linksStream = isDesktop ? null : getLinksStream();
+
   runApp(ScopedModel(
     model: appState,
-    child: WalletApp(appState, localizationsDelegates,
-        () async => await getInitialLink(), getLinksStream()),
+    child:
+        WalletApp(appState, localizationsDelegates, getInitLink, linksStream),
   ));
 }
 
 void main() async {
+  final bool isDesktop =
+      Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+  if (isDesktop) debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   WidgetsFlutterBinding.ensureInitialized();
-  await runCruzallApp(await TrustFall.isTrustFall);
+
+  final PackageInfo packageInfo = await getPackageInfo(!isDesktop);
+  final Directory dataDir = await getDataDir(isDesktop);
+  final bool isTrustFall = isDesktop ? false : await TrustFall.isTrustFall;
+
+  await runCruzallApp(packageInfo, dataDir, isDesktop, isTrustFall);
 }
