@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  bip32:
+    dependency: transitive
+    description:
+      name: bip32
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
   bip39:
     dependency: transitive
     description:
@@ -50,6 +57,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  bs58check:
+    dependency: transitive
+    description:
+      name: bs58check
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  buffer:
+    dependency: transitive
+    description:
+      name: buffer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   build:
     dependency: transitive
     description:
@@ -77,7 +98,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   build_runner:
     dependency: "direct dev"
     description:
@@ -134,6 +155,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  cli_repl:
+    dependency: transitive
+    description:
+      name: cli_repl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0+1"
   code_builder:
     dependency: transitive
     description:
@@ -148,6 +176,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.14.11"
+  colorize:
+    dependency: transitive
+    description:
+      name: colorize
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   convert:
     dependency: transitive
     description:
@@ -183,6 +218,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  dart2_constant:
+    dependency: transitive
+    description:
+      name: dart2_constant
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2+dart2"
   dart_style:
     dependency: transitive
     description:
@@ -190,13 +232,40 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.9"
+  dartssh:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: f52beca2e424456464b27e61a9685622d2c70e70
+      url: "https://github.com/GreenAppers/dartssh"
+    source: git
+    version: "1.0.0+0"
   ed25519_hd_key:
     dependency: transitive
     description:
-      name: ed25519_hd_key
+      path: "."
+      ref: HEAD
+      resolved-ref: "850d0a0061d43cb7e1729901a2edd3c45b02b2c2"
+      url: "https://github.com/GreenAppers/dart-ed25519-hd-key"
+    source: git
+    version: "1.0.1"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "0.2.6"
+  ethereum_util:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "22b4a934e4f3b3134242acac849120c1e1f24ebe"
+      url: "https://github.com/GreenAppers/ethereum_util"
+    source: git
+    version: "1.2.0"
   file:
     dependency: transitive
     description:
@@ -211,6 +280,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.10.9"
+  fluri:
+    dependency: transitive
+    description:
+      name: fluri
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.5"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -284,7 +360,7 @@ packages:
       name: html
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.14.0+2"
+    version: "0.14.0+3"
   http:
     dependency: transitive
     description:
@@ -348,6 +424,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  json_schema:
+    dependency: transitive
+    description:
+      name: json_schema
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
   kernel:
     dependency: transitive
     description:
@@ -369,6 +452,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.5"
+  merkletree:
+    dependency: transitive
+    description:
+      name: merkletree
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   meta:
     dependency: transitive
     description:
@@ -530,6 +620,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.6"
+  sass:
+    dependency: transitive
+    description:
+      name: sass
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.23.0"
   scoped_model:
     dependency: "direct main"
     description:
@@ -550,7 +647,7 @@ packages:
       name: sembast
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1+2"
+    version: "2.1.0"
   shelf:
     dependency: transitive
     description:
@@ -584,6 +681,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sockjs_client:
+    dependency: transitive
+    description:
+      path: "."
+      ref: "0.3.5"
+      resolved-ref: "2e8dc8d2fe8486d31b6e220277c94d746ced1691"
+      url: "git://github.com/Workiva/sockjs-dart-client.git"
+    source: git
+    version: "0.3.5"
+  sockjs_client_wrapper:
+    dependency: transitive
+    description:
+      name: sockjs_client_wrapper
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.11"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -713,10 +826,21 @@ packages:
   tweetnacl:
     dependency: transitive
     description:
-      name: tweetnacl
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "14c6386326ad46f7e6d3c62f4796c07403f918a9"
+      url: "https://github.com/GreenAppers/tweetnacl-dart"
+    source: git
     version: "0.3.2"
+  tweetnacl_musig:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "25a071fb6378ea54f61c012e02519c8c4419e0e2"
+      url: "https://github.com/GreenAppers/tweetnacl-musig"
+    source: git
+    version: "1.0.0+0"
   typed_data:
     dependency: transitive
     description:
@@ -731,6 +855,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  uri:
+    dependency: transitive
+    description:
+      name: uri
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.11.3+1"
   url_launcher:
     dependency: "direct main"
     description:
@@ -745,6 +876,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  utf:
+    dependency: transitive
+    description:
+      name: utf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.0+5"
   vector_math:
     dependency: transitive
     description:
@@ -759,6 +897,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.6+2"
+  w_common:
+    dependency: transitive
+    description:
+      name: w_common
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.20.1"
+  w_transport:
+    dependency: transitive
+    description:
+      name: w_transport
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.8"
   watcher:
     dependency: transitive
     description:

@@ -20,7 +20,7 @@ import 'package:trust_fall/trust_fall.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:cruzawl/http.dart';
+import 'package:cruzawl/network/http.dart';
 import 'package:cruzawl/preferences.dart';
 import 'package:cruzawl/sembast.dart';
 import 'package:cruzawl/util.dart';
@@ -124,7 +124,11 @@ void runCruzallApp(PackageInfo packageInfo, Directory dataDir, bool isDesktop,
       IoFileSystem(),
       packageInfo: packageInfo,
       barcodeScan: isDesktop ? null : barcodeScan,
-      httpClient: HttpClientImpl(),
+      httpClient: HttpClientImpl(
+          debugPrint: preferences.debugLog ? debugPrint : null,
+          userAgent: (x) =>
+              '${packageInfo.packageName}/${packageInfo.version} ($x)'),
+      userAgent: '${packageInfo.packageName}/${packageInfo.version}',
       isTrustFall: isTrustFall,
       createIconImage: (x) => SvgPicture.string(Jdenticon.toSvg(x),
           fit: BoxFit.contain, height: 64, width: 64));
